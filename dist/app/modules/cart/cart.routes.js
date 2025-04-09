@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.cartRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const validateRequest_1 = require("../../middlewares/validateRequest");
+const cart_controller_1 = require("./cart.controller");
+const cart_validation_1 = require("./cart.validation");
+const auth_1 = __importDefault(require("../../middlewares/auth"));
+const router = express_1.default.Router();
+router.post("/create", (0, auth_1.default)("user"), (0, validateRequest_1.validateRequest)(cart_validation_1.cartSchemaValidation), cart_controller_1.cartController.create);
+router.post("/remove_from_cart", (0, auth_1.default)("user"), cart_controller_1.cartController.removeFromCart);
+router.get("/", (0, auth_1.default)("user"), cart_controller_1.cartController.getAll);
+router.get("/admin_get_all_cart", cart_controller_1.cartController.adminGetAllCart);
+router.get("/user_cart", (0, auth_1.default)("user"), cart_controller_1.cartController.getById);
+router.put("/:id", (0, auth_1.default)("user"), (0, validateRequest_1.validateRequest)(cart_validation_1.cartUpdateValidation), cart_controller_1.cartController.update);
+router.post("/product_cart_delete", (0, auth_1.default)("user"), cart_controller_1.cartController.delete);
+router.delete("/bulk", (0, auth_1.default)("user"), cart_controller_1.cartController.bulkDelete);
+exports.cartRoutes = router;

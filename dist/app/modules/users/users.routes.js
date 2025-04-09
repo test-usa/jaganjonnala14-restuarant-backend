@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.usersRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const validateRequest_1 = require("../../middlewares/validateRequest");
+const users_controller_1 = require("./users.controller");
+const users_validation_1 = require("./users.validation");
+const router = express_1.default.Router();
+router.post("/registration", users_controller_1.usersController.create);
+router.post("/admin-registration", users_controller_1.usersController.adminRegistration);
+router.post("/admin-login", users_controller_1.usersController.adminLogin);
+router.post("/login", users_controller_1.usersController.login);
+router.get("/get_all_customer", users_controller_1.usersController.getAll);
+router.get("/:id", users_controller_1.usersController.getById);
+router.put("/:id", (0, validateRequest_1.validateRequest)(users_validation_1.usersUpdateValidation), users_controller_1.usersController.update);
+router.delete("/soft_delete/:id", users_controller_1.usersController.delete);
+router.delete("/bulk", users_controller_1.usersController.bulkDelete);
+exports.usersRoutes = router;

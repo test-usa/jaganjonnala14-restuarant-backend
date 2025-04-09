@@ -1,0 +1,1 @@
+export const COUPON_SEARCHABLE_FIELDS = ["code", "name"];
