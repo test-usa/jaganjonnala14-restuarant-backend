@@ -6,15 +6,23 @@ import { ICategory } from "./categories.interface";
 const categorySchema = new Schema<ICategory>(
   {
     name: { type: String, required: true, trim: true },
-   type: { type: String, enum: ["parent", "category", "subcategory"], required: true },
+    type: {
+      type: String,
+      enum: ["parent", "category", "subcategory"],
+      required: true,
+    },
 
     // Reference to Parent Category (Only for "category" or "subcategory")
-    parentCategory: { type: Schema.Types.ObjectId, ref: "Category", default: null },
+    parentCategory: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      default: null,
+    },
     category: { type: Schema.Types.ObjectId, ref: "Category", default: null },
 
     // Categories under a Parent Category (Only for "parent")
     categories: [{ type: Schema.Types.ObjectId, ref: "Category" }],
-
+    image: { type: String, default: null },
     // Subcategories under a Category (Only for "category")
     subcategories: [{ type: Schema.Types.ObjectId, ref: "Category" }],
 

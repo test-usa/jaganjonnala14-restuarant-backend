@@ -7,7 +7,8 @@ export interface ICategory {
   parentCategory?: ObjectId | null;
   category?: ObjectId | null;
   categories?: ObjectId[]; 
-  subcategories?: ObjectId[]; 
+  subcategories?: ObjectId[];
+  image?: string;
   description?: string;
   status: "active" | "inactive"
   isDelete: boolean;
