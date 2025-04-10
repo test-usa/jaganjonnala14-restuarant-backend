@@ -193,7 +193,6 @@ const getCategoriesForSidebarIntoDB = async (
             : null,
         };
       });
-      console.log(result);
 
     const meta = await service_query.countTotal();
     return {
