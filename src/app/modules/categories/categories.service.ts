@@ -8,6 +8,7 @@ import { ICategory } from "./categories.interface";
 import categoryModel from "./categories.model";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { category_searchable_fields } from "./categories.constant";
+import config from "../../config";
 
 const postCategoryIntoDB = async (data: ICategory) => {
   try {
@@ -39,7 +40,7 @@ const getCategoriesIntoDB = async (query: Record<string, unknown>) => {
       .paginate()
       .fields();
 
-    const result = await service_query.modelQuery
+    let result = await service_query.modelQuery
       .populate({
         path: "subcategories",
         model: "Category",
@@ -64,6 +65,18 @@ const getCategoriesIntoDB = async (query: Record<string, unknown>) => {
         path: "category",
         model: "Category",
       });
+
+    result = result.map((category: any) => {
+      const categoryData = category.toObject(); // Mongoose instance theke pure object banano
+
+      return {
+        ...categoryData,
+
+        image: categoryData.image
+          ? `${config.base_url}/${categoryData.image?.replace(/\\/g, "/")}`
+          : null,
+      };
+    });
 
     const meta = await service_query.countTotal();
     return {

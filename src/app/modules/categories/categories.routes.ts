@@ -27,6 +27,11 @@ router.post(
 
 router.put(
   "/put_category/:id",
+  uploadService.fields([
+    { name: "image", maxCount: 1 }, 
+  ]),
+  configurableCompression("jpeg", 60),
+  processCategoryImage,
   validateRequest(editCategoryValidationSchema),
   categoryController.putCategory
 );
