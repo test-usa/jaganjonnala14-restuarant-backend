@@ -105,7 +105,7 @@ const getCategoriesForSidebarIntoDB = async (
       .paginate()
       .fields();
 
-    const result = await service_query.modelQuery
+    let result = await service_query.modelQuery
       .populate({
         path: "subcategories",
         model: "Category",
@@ -137,6 +137,18 @@ const getCategoriesForSidebarIntoDB = async (
         path: "category",
         model: "Category",
         select: "name _id type",
+      });
+
+      result = result.map((category: any) => {
+        const categoryData = category.toObject(); // Mongoose instance theke pure object banano
+  
+        return {
+          ...categoryData,
+  
+          image: categoryData.image
+            ? `${config.base_url}/${categoryData.image?.replace(/\\/g, "/")}`
+            : null,
+        };
       });
 
     const meta = await service_query.countTotal();

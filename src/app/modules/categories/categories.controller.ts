@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import status from "http-status";
 import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/catchAsync";
 import { categoryServices } from "./categories.service";
+import categoryModel from "./categories.model";
+import path from "path";
+import fs from "fs";
 
 const postCategory = catchAsync(async (req, res) => {
   const data = req.body;
@@ -28,7 +32,9 @@ const getCategory = catchAsync(async (req, res) => {
   });
 });
 const getCategoryForSidebar = catchAsync(async (req, res) => {
-  const result = await categoryServices.getCategoriesForSidebarIntoDB(req.query);
+  const result = await categoryServices.getCategoriesForSidebarIntoDB(
+    req.query
+  );
 
   sendResponse(res, {
     statusCode: status.OK,
@@ -40,6 +46,35 @@ const getCategoryForSidebar = catchAsync(async (req, res) => {
 
 const putCategory = catchAsync(async (req, res) => {
   const { id } = req.params;
+
+  const Category = await categoryModel.findOne({ _id: id });
+
+  if (!Category) {
+    return sendResponse(res, {
+      statusCode: status.NOT_FOUND,
+      success: false,
+      message: "Category not found",
+      data: null,
+    });
+  }
+
+  if (req.body.image.trim() === "") {
+    req.body.image = Category.image;
+  } else {
+    const oldImagePath = path.join(
+      __dirname,
+      "../../../../uploads",
+      path.basename(Category.image as string)
+    );
+
+    if (fs.existsSync(oldImagePath)) {
+      try {
+        fs.unlinkSync(oldImagePath);
+      } catch (error: any) {
+        throw new Error(`Error deleting old feature image: ${error.message}`);
+      }
+    }
+  }
 
   const result = await categoryServices.putCategoryIntoDB({
     id,
@@ -67,7 +102,7 @@ const deleteCategory = catchAsync(async (req, res) => {
 const bulkDeleteCategory = catchAsync(async (req, res) => {
   const { ids } = req.body;
   const result = categoryServices.deleteBulkCategoryIntoDB(ids);
-  
+
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -82,5 +117,5 @@ export const categoryController = {
   putCategory,
   deleteCategory,
   bulkDeleteCategory,
-  getCategoryForSidebar
+  getCategoryForSidebar,
 };
