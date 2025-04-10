@@ -1,9 +1,7 @@
 import { Router } from "express";
 import { categoryRoutes } from "../modules/categories/categories.routes";
-import { attributeOptionRoutes } from "../modules/attributeOption/attributeOption.routes";
-import { attributeRoutes } from "../modules/attribute/attribute.routes";
 import { brandRoutes } from "../modules/brand/brand.routes";
-import { unitRoutes } from "../modules/unit/unit.routes";
+import { variantsRoutes } from "../modules/variants/variants.routes";
 import { productRoutes } from "../modules/product/product.routes";
 import { wishlistRoutes } from "../modules/wishlist/wishlist.routes";
 import { usersRoutes } from "../modules/users/users.routes";
@@ -54,21 +52,13 @@ const moduleRoutes = [
   },
 
   {
-    path: "/unit",
-    route: unitRoutes,
+    path: "/variants",
+    route: variantsRoutes,
   },
   {
     path: "/brand",
     route: brandRoutes,
-  },
-  {
-    path: "/attributeOption",
-    route: attributeOptionRoutes,
-  },
-  {
-    path: "/attribute",
-    route: attributeRoutes,
-  },
+  }
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

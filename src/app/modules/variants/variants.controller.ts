@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { unitService } from "./unit.service";
+import { variantsService } from "./variants.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
-import { unitValidation } from "./unit.validation";
+import { variantsValidation } from "./variants.validation";
 
 const create = catchAsync(async (req: Request, res: Response) => {
-  const result = await unitService.create(req.body);
+  const result = await variantsService.create(req.body);
   sendResponse(res, {
     statusCode: status.CREATED,
     success: true,
@@ -17,7 +17,7 @@ const create = catchAsync(async (req: Request, res: Response) => {
 
 
 const getAll = catchAsync(async (req: Request, res: Response) => {
-  const result = await unitService.getAll(req.query);
+  const result = await variantsService.getAll(req.query);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -27,7 +27,7 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getById = catchAsync(async (req: Request, res: Response) => {
-  const result = await unitService.getById(req.params.id);
+  const result = await variantsService.getById(req.params.id);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -37,8 +37,8 @@ const getById = catchAsync(async (req: Request, res: Response) => {
 });
 
 const update = catchAsync(async (req: Request, res: Response) => {
-  const validatedData = unitValidation.parse(req.body); // Zod validation
-  const result = await unitService.update(req.params.id, validatedData);
+  const validatedData = variantsValidation.parse(req.body); // Zod validation
+  const result = await variantsService.update(req.params.id, validatedData);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -48,7 +48,7 @@ const update = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteEntity = catchAsync(async (req: Request, res: Response) => {
-  await unitService.delete(req.params.id);
+  await variantsService.delete(req.params.id);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -60,7 +60,7 @@ const deleteEntity = catchAsync(async (req: Request, res: Response) => {
 const bulkDelete = catchAsync(async (req: Request, res: Response) => {
   const {ids} = req.body
 
-  await unitService.bulkDelete(ids);
+  await variantsService.bulkDelete(ids);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -69,7 +69,7 @@ const bulkDelete = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const unitController = {
+export const variantsController = {
   create,
   getAll,
   getById,

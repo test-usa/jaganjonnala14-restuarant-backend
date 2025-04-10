@@ -1,0 +1,1 @@
+export const variants_SEARCHABLE_FIELDS = ["name"];
