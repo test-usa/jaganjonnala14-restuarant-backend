@@ -18,6 +18,19 @@ export const processCategoryImage = (
         files && files.image && files.image.length > 0
           ? files.image[0].path
           : "",
+
+                // Parse categories as JSON if they exist
+      categories:
+      req.body.categories && req.body.categories.length > 0
+        ? JSON.parse(req.body.categories)
+        : [],
+
+    // Optional subcategories
+    subcategories:
+      req.body.subcategories && req.body.subcategories.length > 0
+        ? JSON.parse(req.body.subcategories)
+        : [],
+  
     };
 
     req.body = body;

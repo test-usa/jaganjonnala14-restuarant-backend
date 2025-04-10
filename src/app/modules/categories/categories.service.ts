@@ -109,34 +109,34 @@ const getCategoriesForSidebarIntoDB = async (
       .populate({
         path: "subcategories",
         model: "Category",
-        select: "name _id type",
+        select: "name _id type image",
 
         populate: {
           path: "subcategories",
           model: "Category",
-          select: "name _id type",
+          select: "name _id type image",
         },
       })
       .populate({
         path: "categories",
         model: "Category",
-        select: "name _id type",
+        select: "name _id type image",
 
         populate: {
           path: "subcategories",
           model: "Category",
-          select: "name _id type",
+          select: "name _id type image",
         },
       })
       .populate({
         path: "parentCategory",
         model: "Category",
-        select: "name _id type",
+        select: "name _id type image",
       })
       .populate({
         path: "category",
         model: "Category",
-        select: "name _id type",
+        select: "name _id type image",
       });
 
       result = result.map((category: any) => {
@@ -148,8 +148,52 @@ const getCategoriesForSidebarIntoDB = async (
           image: categoryData.image
             ? `${config.base_url}/${categoryData.image?.replace(/\\/g, "/")}`
             : null,
+
+
+          subcategories: categoryData.subcategories.map((subcategory: any) => ({
+            ...subcategory,
+            image: subcategory.image
+              ? `${config.base_url}/${subcategory.image?.replace(/\\/g, "/")}`
+              : null,
+          })),
+          categories: categoryData.categories.map((subcategory: any) => ({
+            ...subcategory,
+            image: subcategory.image
+              ? `${config.base_url}/${subcategory.image?.replace(/\\/g, "/")}`
+              : null,
+              subcategories: subcategory.subcategories.map((item : any) => ({
+                ...item, 
+                image: item.image
+                ? `${config.base_url}/${item.image?.replace(/\\/g, "/")}`
+                : null,
+              }))
+
+          })),
+          parentCategory: categoryData.parentCategory
+            ? {
+                ...categoryData.parentCategory,
+                image: categoryData.parentCategory.image
+                  ? `${config.base_url}/${categoryData.parentCategory.image?.replace(
+                      /\\/g,
+                      "/"
+                    )}`
+                  : null,
+              }
+            : null,
+          category: categoryData.category
+            ? {
+                ...categoryData.category,
+                image: categoryData.category.image
+                  ? `${config.base_url}/${categoryData.category.image?.replace(
+                      /\\/g,
+                      "/"
+                    )}`
+                  : null,
+              }
+            : null,
         };
       });
+      console.log(result);
 
     const meta = await service_query.countTotal();
     return {
