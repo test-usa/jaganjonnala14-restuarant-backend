@@ -2,7 +2,6 @@ import mongoose, { Types } from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
-    
     productName: { type: String, required: true },
     skuCode: { type: String, required: true, unique: true },
     productCategory: { type: Types.ObjectId, ref: "Category", required: true },
