@@ -49,7 +49,7 @@ exports.productService = {
                     .fields();
                 let result = yield service_query.modelQuery
                     .populate("productCategory")
-                    .populate("productUnit")
+                    .populate("productVariants")
                     .populate("variant")
                     .populate("variantcolor")
                     .populate("productBrand");
@@ -96,7 +96,7 @@ exports.productService = {
                 let result = yield product_model_1.productModel
                     .find(filter)
                     .populate("productCategory")
-                    .populate("productUnit")
+                    .populate("productVariants")
                     .populate("variant")
                     .populate("variantcolor")
                     .populate("productBrand")
@@ -235,7 +235,7 @@ exports.productService = {
                 let result = yield product_model_1.productModel
                     .find(filter)
                     .populate("productCategory")
-                    .populate("productUnit")
+                    .populate("productVariants")
                     .populate("variant")
                     .populate("variantcolor")
                     .populate("productBrand")
@@ -270,7 +270,7 @@ exports.productService = {
                 let result = yield product_model_1.productModel
                     .findById(id)
                     .populate("productCategory")
-                    .populate("productUnit")
+                    .populate("productVariants")
                     .populate("variant")
                     .populate("variantcolor")
                     .populate("productBrand");

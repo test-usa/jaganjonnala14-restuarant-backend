@@ -8,7 +8,7 @@ exports.productValidation = zod_1.z.object({
     productCategory: zod_1.z.string().min(1, "Category is required"),
     productBrand: zod_1.z.string().min(1, "Brand is required"),
     productWeight: zod_1.z.string().nullable().optional(),
-    productUnit: zod_1.z.string().min(1, "Unit is required"),
+    productVariants: zod_1.z.string().min(1, "Unit is required"),
     productPurchasePoint: zod_1.z.string().nullable().optional(),
     productBuyingPrice: zod_1.z.number().min(0, "Buying price must be a positive number"),
     productSellingPrice: zod_1.z.number().min(0, "Selling price must be a positive number"),

@@ -85,7 +85,7 @@ exports.wishlistService = {
                     populate: [
                         { path: "productBrand" }, // Populate productBrand
                         { path: "productCategory" }, // Populate productCategory
-                        { path: "productUnit" }, // Populate productUnit
+                        { path: "productVariants" }, // Populate productVariants
                     ],
                 });
                 const result = data.map((data) => {
@@ -128,7 +128,7 @@ exports.wishlistService = {
                     populate: [
                         { path: "productBrand" }, // Populate productBrand
                         { path: "productCategory" }, // Populate productCategory
-                        { path: "productUnit" }, // Populate productUnit
+                        { path: "productVariants" }, // Populate productVariants
                     ],
                 });
                 // 🔹 Modify result for images (convert file paths to URLs)

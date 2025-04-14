@@ -7,7 +7,7 @@ export interface IProduct {
     productCategory: ObjectId;
     productBrand: ObjectId;
     productWeight?: string;
-    productUnit: ObjectId;
+    productVariants: ObjectId;
     productPurchasePoint?: string;
     productBuyingPrice: number;
     productSellingPrice: number;

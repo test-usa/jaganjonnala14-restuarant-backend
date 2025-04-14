@@ -41,7 +41,7 @@ const productSchema = new mongoose_1.default.Schema({
     productCategory: { type: mongoose_1.Types.ObjectId, ref: "Category", required: true },
     productBrand: { type: mongoose_1.Types.ObjectId, ref: "Brand", required: true },
     productWeight: { type: String, default: "" }, // Default value set to an empty string
-    productUnit: { type: mongoose_1.Types.ObjectId, ref: "Unit", required: true },
+    productVariants: { type: mongoose_1.Types.ObjectId, ref: "Variants", required: true },
     productPurchasePoint: { type: String, default: "" }, // Default value set to an empty string
     productBuyingPrice: { type: Number, required: true, default: 0 }, // Default value set to 0
     productSellingPrice: { type: Number, required: true, default: 0 }, // Default value set to 0

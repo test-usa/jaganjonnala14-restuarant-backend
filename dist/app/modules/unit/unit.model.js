@@ -11,4 +11,4 @@ const unitSchema = new mongoose_1.default.Schema({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
-exports.unitModel = mongoose_1.default.model("Unit", unitSchema);
+exports.unitModel = mongoose_1.default.model("Variants", unitSchema);

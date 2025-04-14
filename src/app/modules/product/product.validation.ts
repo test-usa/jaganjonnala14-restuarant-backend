@@ -6,7 +6,7 @@ export const productValidation = z.object({
   productCategory: z.string().min(1, "Category is required"),
   productBrand: z.string().min(1, "Brand is required"),
   productWeight: z.string().nullable().optional(),
-  productUnit: z.string().min(1, "Unit is required"),
+  productVariants: z.string().min(1, "Unit is required"),
   productPurchasePoint: z.string().nullable().optional(),
   productBuyingPrice: z.number().min(0, "Buying price must be a positive number"),
   productSellingPrice: z.number().min(0, "Selling price must be a positive number"),

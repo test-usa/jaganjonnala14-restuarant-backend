@@ -31,7 +31,7 @@ export const productService = {
 
       let result = await service_query.modelQuery
         .populate("productCategory")
-        .populate("productUnit")
+        .populate("productVariants")
         .populate("variant")
         .populate("variantcolor")
         .populate("productBrand");
@@ -100,7 +100,7 @@ export const productService = {
       let result = await productModel
         .find(filter)
         .populate("productCategory")
-        .populate("productUnit")
+        .populate("productVariants")
         .populate("variant")
         .populate("variantcolor")
         .populate("productBrand")
@@ -293,7 +293,7 @@ const filter = {
       let result = await productModel
         .find(filter)
         .populate("productCategory")
-        .populate("productUnit")
+        .populate("productVariants")
         .populate("variant")
         .populate("variantcolor")
         .populate("productBrand")
@@ -338,7 +338,7 @@ const filter = {
       let result: any = await productModel
         .findById(id)
         .populate("productCategory")
-        .populate("productUnit")
+        .populate("productVariants")
         .populate("variant")
         .populate("variantcolor")
         .populate("productBrand");

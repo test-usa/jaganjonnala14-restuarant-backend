@@ -2,12 +2,13 @@ import mongoose, { Types } from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
+    
     productName: { type: String, required: true },
     skuCode: { type: String, required: true, unique: true },
     productCategory: { type: Types.ObjectId, ref: "Category", required: true },
     productBrand: { type: Types.ObjectId, ref: "Brand", required: true },
     productWeight: { type: String, default: "" }, // Default value set to an empty string
-    productUnit: { type: Types.ObjectId, ref: "Unit", required: true },
+    productVariants: { type: Types.ObjectId, ref: "Variants", required: true },
     productPurchasePoint: { type: String, default: "" }, // Default value set to an empty string
     productBuyingPrice: { type: Number, required: true, default: 0 }, // Default value set to 0
     productSellingPrice: { type: Number, required: true, default: 0 }, // Default value set to 0
