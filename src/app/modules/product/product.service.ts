@@ -32,8 +32,6 @@ export const productService = {
       let result = await service_query.modelQuery
         .populate("productCategory")
         .populate("productVariants")
-        .populate("variant")
-        .populate("variantcolor")
         .populate("productBrand");
 
       // Mongoose Document Instance ke normal object e convert kora
@@ -101,8 +99,6 @@ export const productService = {
         .find(filter)
         .populate("productCategory")
         .populate("productVariants")
-        .populate("variant")
-        .populate("variantcolor")
         .populate("productBrand")
         .skip((pageIndex - 1) * pageSize)
         .limit(pageSize)
@@ -294,8 +290,6 @@ const filter = {
         .find(filter)
         .populate("productCategory")
         .populate("productVariants")
-        .populate("variant")
-        .populate("variantcolor")
         .populate("productBrand")
         .sort(sortOptions)
         .skip(skip)
@@ -339,8 +333,6 @@ const filter = {
         .findById(id)
         .populate("productCategory")
         .populate("productVariants")
-        .populate("variant")
-        .populate("variantcolor")
         .populate("productBrand");
 
       result = {
