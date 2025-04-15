@@ -6,7 +6,6 @@ const productSchema = new mongoose.Schema(
     skuCode: { type: String, required: true, unique: true },
     productCategory: { type: Types.ObjectId, ref: "Category", required: true },
     productBrand: { type: Types.ObjectId, ref: "Brand", required: true },
-    productWeight: { type: String, default: "" }, // Default value set to an empty string
     productVariants: { type: Types.ObjectId, ref: "Variants", required: true },
     productPurchasePoint: { type: String, default: "" }, // Default value set to an empty string
     productBuyingPrice: { type: Number, required: true, default: 0 }, // Default value set to 0
@@ -16,12 +15,9 @@ const productSchema = new mongoose.Schema(
     salesCount: { type: Number, default: 0 }, // For tracking best-sellers
 
     isFeatured: { type: Boolean, default: false },
-    haveVarient: { type: Boolean, default: false },
     productDescription: { type: String, default: "" }, // Default value set to an empty string
     productFeatureImage: { type: String, default: null },
     productImages: [{ type: String, default: [] }], // Default value set to an empty array
-    variant: { type: Types.ObjectId, ref: "Attribute", default: null },
-    variantcolor: { type: [{ type: Types.ObjectId, ref: "AttributeOption" }], default: [] }, // Default value set to an empty array
     isDelete: { type: Boolean, default: false },
   
   },
