@@ -93,7 +93,6 @@ router.put(
         productOfferPrice: Number(req.body.productOfferPrice) || 0,
         productStock: Number(req.body.productStock) || 0,
         isFeatured: req.body.isFeatured === "true" ? true : false,
-        haveVarient: req.body.haveVarient === "true" ? true : false,
 
         // Fix ObjectId issue by checking the variant value
         variant:
@@ -101,11 +100,6 @@ router.put(
             ? req.body.variant
             : null,
 
-        // Default empty array for variantcolor if not provided
-        variantcolor:
-          req.body.variantcolor && req.body.variantcolor.length > 0
-            ? JSON.parse(req.body.variantcolor)
-            : [],
 
         // Check for productFeatureImage and set default if not provided
         productFeatureImage:

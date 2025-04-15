@@ -1,29 +1,22 @@
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 
-// interfaces/IProduct.ts
 export interface IProduct {
-    productName: string;
-    skuCode: string;
-    productCategory: ObjectId;
-    productBrand: ObjectId;
-    productWeight?: string;
-    productVariants: ObjectId;
-    productPurchasePoint?: string;
-    productBuyingPrice: number;
-    productSellingPrice: number;
-    productOfferPrice?: number;
-    salesCount?: number;
-    productStock: number;
-    isFeatured: boolean;
-    haveVarient: boolean;
-    productDescription?: string;
-    productFeatureImage?: string;
-    productImages: string[];
-    variant?: ObjectId;
-    variantcolor?: ObjectId[];
-    isDelete?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-  }
-  
- 
+  _id?: Types.ObjectId;
+  productName: string;
+  skuCode: string;
+  productCategory: Types.ObjectId;
+  productBrand: Types.ObjectId;
+  productVariants?: Types.ObjectId[];
+  productBuyingPrice: number;
+  productSellingPrice: number;
+  productOfferPrice?: number;
+  productStock: number;
+  salesCount?: number;
+  isFeatured?: boolean;
+  productDescription?: string;
+  productFeatureImage?: string | null;
+  productImages?: string[];
+  isDelete?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}

@@ -6,18 +6,16 @@ const productSchema = new mongoose.Schema(
     skuCode: { type: String, required: true, unique: true },
     productCategory: { type: Types.ObjectId, ref: "Category", required: true },
     productBrand: { type: Types.ObjectId, ref: "Brand", required: true },
-    productVariants: { type: Types.ObjectId, ref: "Variants", required: true },
-    productPurchasePoint: { type: String, default: "" }, // Default value set to an empty string
-    productBuyingPrice: { type: Number, required: true, default: 0 }, // Default value set to 0
-    productSellingPrice: { type: Number, required: true, default: 0 }, // Default value set to 0
-    productOfferPrice: { type: Number, default: 0 }, // Default value set to 0
-    productStock: { type: Number, required: true, default: 0 }, // Default value set to 0
-    salesCount: { type: Number, default: 0 }, // For tracking best-sellers
-
+    productVariants: [{ type: Types.ObjectId, ref: "Variants"}],
+    productBuyingPrice: { type: Number, required: true, default: 0 }, 
+    productSellingPrice: { type: Number, required: true, default: 0 }, 
+    productOfferPrice: { type: Number, default: 0 }, 
+    productStock: { type: Number, required: true, default: 0 }, 
+    salesCount: { type: Number, default: 0 }, 
     isFeatured: { type: Boolean, default: false },
-    productDescription: { type: String, default: "" }, // Default value set to an empty string
+    productDescription: { type: String, default: "" }, 
     productFeatureImage: { type: String, default: null },
-    productImages: [{ type: String, default: [] }], // Default value set to an empty array
+    productImages: [{ type: String, default: [] }], 
     isDelete: { type: Boolean, default: false },
   
   },

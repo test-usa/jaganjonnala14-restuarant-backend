@@ -10,7 +10,7 @@ const create = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: status.CREATED,
     success: true,
-    message: "Created successfully",
+    message: "Variant created successfully",
     data: result,
   });
 });
