@@ -1,0 +1,1 @@
+export const ACCOUNT_SEARCHABLE_FIELDS = [];

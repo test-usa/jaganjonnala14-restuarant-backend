@@ -1,0 +1,1 @@
+export const BALANCE_SEARCHABLE_FIELDS = [];

@@ -2,60 +2,81 @@ import mongoose, { Types } from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
-    customer: {
-      name: { type: String, required: true },
-      email: { type: String },
-      phone: { type: String, required: true },
-      address: { type: String, required: true },
-    },
-    customerId: { type: Types.ObjectId, ref: "user" },
-    payment: {
-      type: {
-        type: String,
-        enum: ["manual", "cashOnDelivery", "SSLCommerz"],
-        required: true,
-      },
-      method: {
-        type: String,
-        enum: ["bkash", "nagad", "upay", "rocket", null],
-        default: null,
-      },
-      transactionId: { type: String },
-     
-    },
-    paymentStatus: {
+    customerName: {
       type: String,
-      enum: ["unpaid", "paid"],
-      default: "unpaid",
     },
-    delivery: {
-      location: { type: String, enum: ["inside", "outside"], required: true },
-      fee: { type: Number, required: true },
+    phone: {
+      type: Number,
+      require: true,
     },
-    coupon: {
-      code: { type: String },
-      discount: { type: Number },
+    address: {
+      type: String,
     },
-    items: [
+    email: {
+      type: String,
+    },
+    user: {
+      type: Types.ObjectId,
+      ref: "user",
+      require: true,
+    },
+    products: [
       {
         product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
+          type: Types.ObjectId,
+          require: true,
         },
-        quantity: { type: Number, required: true },
-        price: { type: Number, required: true },
+        productName: {
+          type: String,
+          require: true,
+        },
+        quantity: {
+          type: Number,
+        },
+        sku: {
+          type: String,
+        },
       },
     ],
-    transactionId: { type: String },
-    paymentDate: { type: Date},
-    subtotal: { type: Number, required: true },
-    total: { type: Number, required: true },
-    status: {
-      type: String,
-      enum: ["pending", "completed", "cancelled"],
-      default: "pending",
+    orderId: {
+      type: String, 
     },
+    paymentMethod: {
+      type: String
+    },
+    code: {
+      type: String
+    },
+    delivery: {
+      type : String
+    },
+    subTotal: {
+      type: Number
+    },
+    shippingFee: {
+      type: Number
+    },
+    extraFee: {
+      type: Number
+    },
+    discount: {
+      type : Number
+    },
+    grandTotal: {
+      type: Number
+    },
+    transactionId: {
+      type: String
+    },
+    paymentStatus: {
+      type: String
+    },
+    deliveryStatus: {
+      type: String
+    },
+    orderstatus: {
+      type: String
+    }
   },
   { timestamps: true }
 );
