@@ -1,1 +1,0 @@
-export const REPORTS_SEARCHABLE_FIELDS = [];
