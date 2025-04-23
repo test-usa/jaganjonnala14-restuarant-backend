@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Iusers } from "./users.interface";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 const usersSchema = new mongoose.Schema<Iusers>(
   {
     name: {
@@ -74,18 +75,30 @@ const usersSchema = new mongoose.Schema<Iusers>(
 );
 
 usersSchema.pre("save", async function (next) {
-  if(!this.isModified("password")) return next();
+  if (!this.isModified("password")) return next();
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
-
   } catch (error: any) {
     next(error);
-    
   }
-})
+});
 
+// Compare password
+usersSchema.methods.comparePassword = async function (
+  password: string
+): Promise<boolean> {
+  return await bcrypt.compare(password, this.password);
+};
 
+// Generate JWT token
+usersSchema.methods.generateAuthToken = function (): string {
+  return jwt.sign(
+    { id: this._id, role: this.role },
+    process.env.JWT_SECRET || "your-secret-key",
+    { expiresIn: process.env.JWT_EXPIRES_IN || "30d" } as jwt.SignOptions
+  );
+};
 
 export const usersModel = mongoose.model<Iusers>("users", usersSchema);
