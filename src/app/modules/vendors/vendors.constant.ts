@@ -1,0 +1,1 @@
+export const VENDORS_SEARCHABLE_FIELDS = [];
