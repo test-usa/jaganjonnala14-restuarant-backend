@@ -1,15 +1,16 @@
 export interface Iusers {
-    _id?: string;
     name: string;
-    image?: string;
-    email: string;
-    password: string;
+    email?: string;
     phone: string;
-    address: string;
-    role: 'admin' | 'vendor' | 'customer' | 'manager';
+    password: string;
+    image?: string;
+    address?: string;
+    role?: "admin" | "employee" | "customer";
+    rewardPoints?: number;
     isActive?: boolean;
+    lastLogin?: Date;
     isDelete?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
-
-}
+  }
+  
