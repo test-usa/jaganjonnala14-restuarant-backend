@@ -17,9 +17,9 @@ const router = express.Router();
 const { configurableCompression } = photoComposure();
 
 router.post(
-  "/post_attributeOption",
-  authenticate,
-  authorize(ROLE.ADMIN),
+  "/post_attribute_option",
+  // authenticate,
+  // authorize(ROLE.ADMIN),
   getMuler({
     upload_file_destination_path: "uploads",
     regex: /\.(jpg|jpeg|png|webp)$/,
@@ -32,17 +32,17 @@ router.post(
   attributeOptionController.postAttributeOption
 );
 router.get(
-  "/get_all_attributeOption",
+  "/get_all_attribute_option",
   attributeOptionController.getAllAttributeOption
 );
 router.get(
-  "/get_single_attributeOption/:id",
+  "/get_single_attribute_option/:id",
   attributeOptionController.getSingleAttributeOption
 );
 router.put(
-  "/update_attributeOption/:id",
-  authenticate,
-    authorize(ROLE.ADMIN, ROLE.VENDOR),
+  "/update_attribute_option/:id",
+  // authenticate,
+  //   authorize(ROLE.ADMIN, ROLE.VENDOR),
     getMuler({
       upload_file_destination_path: "uploads",
       regex: /\.(jpg|jpeg|png|webp)$/,
@@ -61,7 +61,7 @@ router.put(
   attributeOptionController.updateAttributeOption
 );
 router.delete(
-  "/delete_attributeOption/:id",
+  "/delete_attribute_option/:id",
   attributeOptionController.deleteAttributeOption
 );
 

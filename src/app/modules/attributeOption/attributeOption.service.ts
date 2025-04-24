@@ -101,14 +101,15 @@ export const attributeOptionService = {
         );
       }
 
-      const result = await attributeOptionModel.updateOne(
-        { _id: data.id },
-        data,
+ const result = await attributeOptionModel.findByIdAndUpdate(
+        id,
         {
-          new: true,
-        }
+          $set: {
+            ...data,
+          },
+        },
+        { new: true }
       );
-  
       return result;
     } catch (error: unknown) {
       if (error instanceof Error) {
