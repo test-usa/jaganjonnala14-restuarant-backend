@@ -47,7 +47,7 @@ const moduleRoutes = [
         route: attributeOptionRoutes
     },
     {
-        path: "/products",
+        path: "/product",
         route: productsRoutes
     },
     {

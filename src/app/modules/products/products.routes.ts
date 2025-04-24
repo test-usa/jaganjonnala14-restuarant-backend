@@ -15,7 +15,7 @@ const router = express.Router();
 const { configurableCompression } = photoComposure();
 
 router.post(
-    "/post_products",
+    "/post_product",
     authenticate,
     authorize(ROLE.VENDOR, ROLE.ADMIN),
     getMuler({
@@ -39,13 +39,13 @@ router.post(
     productsController.postProducts
   );
   
-router.get("/get_all_products", productsController.getAllProducts);
-router.get("/get_single_products/:id", productsController.getSingleProducts);
+router.get("/get_all_product", productsController.getAllProducts);
+router.get("/get_single_product/:id", productsController.getSingleProducts);
 router.put(
-  "/update_products/:id",
+  "/update_product/:id",
   validateRequest(productsUpdateValidation),
   productsController.updateProducts
 );
-router.delete("/delete_products/:id", productsController.deleteProducts);
+router.delete("/delete_product/:id", productsController.deleteProducts);
 
 export const productsRoutes = router;
