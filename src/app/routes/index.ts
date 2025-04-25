@@ -5,11 +5,11 @@ import { productsRoutes } from "../modules/products/products.routes";
 import { categoriesRoutes } from "../modules/categories/categories.routes";
 import { ordersRoutes } from "../modules/orders/orders.routes";
 import { adminRoutes } from "../modules/admin/admin.routes";
-import { managerRoutes } from "../modules/manager/manager.routes";
 import { customerRoutes } from "../modules/customer/customer.routes";
 import { brandRoutes } from "../modules/brand/brand.routes";
 import { attributeOptionRoutes } from "../modules/attributeOption/attributeOption.routes";
 import { attributeRoutes } from "../modules/attribute/attribute.routes";
+import { employeeRoutes } from "../modules/employee/employee.routes";
 
 const router = Router();
 
@@ -31,8 +31,8 @@ const moduleRoutes = [
         route: customerRoutes
     },
     {
-        path: "/managers",
-        route: managerRoutes
+        path: "/employee",
+        route: employeeRoutes
     },
     {
         path: "/brand",

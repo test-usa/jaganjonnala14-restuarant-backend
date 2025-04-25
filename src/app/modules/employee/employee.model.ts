@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
     
-    const managerSchema = new mongoose.Schema({
+    const employeeSchema = new mongoose.Schema({
     
      isDelete: {
             type: Boolean,
             default: false,
         }}, { timestamps: true });
     
-    export const managerModel = mongoose.model("manager", managerSchema);
+    export const employeeModel = mongoose.model("employee", employeeSchema);

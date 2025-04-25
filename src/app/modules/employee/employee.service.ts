@@ -1,5 +1,5 @@
-import { managerModel } from "./manager.model";
-      import { MANAGER_SEARCHABLE_FIELDS } from "./manager.constant";
+import { employeeModel } from "./employee.model";
+      import { EMPLOYEE_SEARCHABLE_FIELDS } from "./employee.constant";
     import QueryBuilder from "../../builder/QueryBuilder";
     import status from "http-status";
     import AppError from "../../errors/AppError";
@@ -8,10 +8,10 @@ import { managerModel } from "./manager.model";
 
 
 
-    export const managerService = {
-      async postManagerIntoDB(data: any) {
+    export const employeeService = {
+      async postEmployeeIntoDB(data: any) {
       try {
-        return await managerModel.create(data);
+        return await employeeModel.create(data);
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
@@ -20,12 +20,12 @@ import { managerModel } from "./manager.model";
           }
         }
       },
-      async getAllManagerFromDB(query: any) {
+      async getAllEmployeeFromDB(query: any) {
       try {
     
     
-      const service_query = new QueryBuilder(managerModel.find(), query)
-            .search(MANAGER_SEARCHABLE_FIELDS)
+      const service_query = new QueryBuilder(employeeModel.find(), query)
+            .search(EMPLOYEE_SEARCHABLE_FIELDS)
             .filter()
             .sort()
             .paginate()
@@ -46,9 +46,9 @@ import { managerModel } from "./manager.model";
           }
         }
       },
-      async getSingleManagerFromDB(id: string) {
+      async getSingleEmployeeFromDB(id: string) {
         try {
-        return await managerModel.findById(id);
+        return await employeeModel.findById(id);
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
@@ -57,21 +57,21 @@ import { managerModel } from "./manager.model";
           }
         }
       },
-      async updateManagerIntoDB(data: any) {
+      async updateEmployeeIntoDB(data: any) {
       try {
     
     
     
-      const isDeleted = await managerModel.findOne({ _id: data.id });
+      const isDeleted = await employeeModel.findOne({ _id: data.id });
         if (isDeleted?.isDelete) {
-          throw new AppError(status.NOT_FOUND, "manager is already deleted");
+          throw new AppError(status.NOT_FOUND, "employee is already deleted");
         }
     
-        const result = await managerModel.updateOne({ _id: data.id }, data, {
+        const result = await employeeModel.updateOne({ _id: data.id }, data, {
           new: true,
         });
         if (!result) {
-          throw new Error("manager not found.");
+          throw new Error("employee not found.");
         }
         return result;
     
@@ -84,19 +84,19 @@ import { managerModel } from "./manager.model";
           }
         }
       },
-      async deleteManagerFromDB(id: string) {
+      async deleteEmployeeFromDB(id: string) {
         try {
     
     
-     // Step 1: Check if the manager exists in the database
-        const isExist = await managerModel.findOne({ _id: id });
+     // Step 1: Check if the employee exists in the database
+        const isExist = await employeeModel.findOne({ _id: id });
     
         if (!isExist) {
-          throw new AppError(status.NOT_FOUND, "manager not found");
+          throw new AppError(status.NOT_FOUND, "employee not found");
         }
     
-        // Step 4: Delete the home manager from the database
-        await managerModel.updateOne({ _id: id }, { isDelete: true });
+        // Step 4: Delete the home employee from the database
+        await employeeModel.updateOne({ _id: id }, { isDelete: true });
         return;
     
          } catch (error: unknown) {

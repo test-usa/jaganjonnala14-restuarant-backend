@@ -1,1 +1,0 @@
-export const MANAGER_SEARCHABLE_FIELDS = [];
