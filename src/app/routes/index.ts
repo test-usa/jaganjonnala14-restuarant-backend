@@ -35,7 +35,7 @@ const moduleRoutes = [
         route: managerRoutes
     },
     {
-        path: "/brands",
+        path: "/brand",
         route: brandRoutes
     },
     {

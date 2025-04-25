@@ -6,7 +6,7 @@ const productsSchema = new mongoose.Schema(
     slug: { type: String, trim: true },
     description: { type: String },
 
-    brand: { type: mongoose.Types.ObjectId, ref: "brand" },
+    brand: { type: mongoose.Types.ObjectId, ref: "brand", required: true },
     category: {
       type: mongoose.Types.ObjectId,
       ref: "categories",
@@ -19,7 +19,7 @@ const productsSchema = new mongoose.Schema(
     stock: { type: Number },
     sku: { type: String, required: true, unique: true },
 
-    images: [{ type: String }],
+    images: [{ type: String, required: true, default: null }],
     thumbnail: { type: String, default: null },
     video: { type: String, default: null },
     

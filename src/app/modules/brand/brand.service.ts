@@ -66,6 +66,9 @@ export const brandService = {
       if (!result) {
         throw new AppError(status.NOT_FOUND, "Brand not found");
       }
+      if (result.isDelete) {
+        throw new AppError(status.NOT_FOUND, "Brand already deleted");
+      }
 
       result = {
         ...result.toObject(),

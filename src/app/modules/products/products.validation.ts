@@ -18,7 +18,6 @@ export const productsPostValidation = z.object({
     .transform((val) => (Array.isArray(val) ? val : [val]))
     .optional(),
 
-  vendor: objectId,
 
   price: z.coerce.number().min(0),
   discount: z.coerce.number().min(0).max(100).optional(),
