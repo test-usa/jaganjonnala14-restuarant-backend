@@ -15,8 +15,8 @@ const { configurableCompression } = photoComposure();
 
 router.post(
   "/post_brand",
-  authenticate,
-  authorize(ROLE.ADMIN),
+  // authenticate,
+  // authorize(ROLE.ADMIN),
   getMuler({
     upload_file_destination_path: "uploads",
     regex: /\.(jpg|jpeg|png|webp)$/,

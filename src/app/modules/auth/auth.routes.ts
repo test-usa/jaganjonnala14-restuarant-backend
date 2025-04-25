@@ -19,5 +19,9 @@ router.post(
   validateRequest(authLoginValidation),
   authController.Login
 );
+router.post(
+  "/logout",
+  authController.Logout
+);
 
 export const authRoutes = router;

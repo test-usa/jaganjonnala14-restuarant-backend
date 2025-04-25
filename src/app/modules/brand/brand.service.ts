@@ -9,7 +9,7 @@ export const brandService = {
     try {
       // Step 1: Check if the brand already exists in the database
       const isExist = await brandModel.findOne({
-        name: data.name,
+        brandName: data.brandName,
       });
       if (isExist) {
         throw new AppError(status.CONFLICT, "Brand already exists");
