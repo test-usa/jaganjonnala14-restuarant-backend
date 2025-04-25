@@ -5,8 +5,8 @@ import status from "http-status";
 import { usersModel } from "../users/users.model";
 import { Iusers } from "../users/users.interface";
 import AppError from "../../errors/AppError";
-import comparePassword from "../../utils/comparePassword";
 import generateToken from "../../utils/generateToken";
+import bcrypt from "bcryptjs";
 
 const Register = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -29,39 +29,44 @@ const Register = catchAsync(
   }
 );
 
+
 const Login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    // check if  user not exists:
-    const user: Iusers | null = await usersModel.findOne({
-      email: req.body.email,
-    });
+    const { email, password } = req.body;
+
+    // 1. Check if user exists
+    const user: Iusers | null = await usersModel
+      .findOne({ email })
+      .select("+password");
+
     if (!user) {
-      throw new AppError(status.CONFLICT, "User not exists! please register");
+      throw new AppError(status.CONFLICT, "User not exists! Please register");
     }
 
-    // compare password:
-    const isMatch = await comparePassword(req.body.password, user.password);
 
+
+    // 2. Compare password using bcrypt directly
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       throw new AppError(status.UNAUTHORIZED, "Password is incorrect");
     }
 
-    // generate token:
+    // 3. Generate token
     const token = generateToken(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET as string,
       process.env.JWT_EXPIRES_IN as unknown as number
     );
 
-    // 3. Set token in cookie:
+    // 4. Set token in cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: Number(process.env.JWT_EXPIRES_IN) * 1000, // Convert to milliseconds
+      maxAge: parseInt(process.env.JWT_EXPIRES_IN as string) * 1000,
     });
 
-    // 4. Send response
+    // 5. Send response
     sendResponse(res, {
       statusCode: status.OK,
       success: true,
@@ -77,5 +82,6 @@ const Login = catchAsync(
     });
   }
 );
+
 
 export const authController = { Register, Login };

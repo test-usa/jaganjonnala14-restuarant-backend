@@ -51,7 +51,7 @@ const moduleRoutes = [
         route: productsRoutes
     },
     {
-        path: "/categories",
+        path: "/category",
         route: categoriesRoutes
     },
     {

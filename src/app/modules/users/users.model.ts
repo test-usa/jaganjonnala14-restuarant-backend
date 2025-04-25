@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Iusers } from "./users.interface";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+
 const usersSchema = new mongoose.Schema<Iusers>(
   {
     name: {
@@ -12,8 +12,6 @@ const usersSchema = new mongoose.Schema<Iusers>(
     },
     email: {
       type: String,
-      // required: [true, "Email is required"],
-      // unique: true,
       trim: true,
       lowercase: true,
       validate: {
@@ -41,64 +39,20 @@ const usersSchema = new mongoose.Schema<Iusers>(
       minlength: [6, "Password must be at least 6 characters"],
       select: false,
     },
-
-    image: {
-      type: String,
-    },
-    address: {
-      type: String,
-      trim: true,
-    },
+    image: { type: String },
+    address: { type: String, trim: true },
     role: {
       type: String,
       enum: ["admin", "employee", "customer"],
       default: "customer",
     },
-    rewardPoints: {
-      type: Number,
-      default: 0,
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-    lastLogin: {
-      type: Date,
-    },
-
-    isDelete: {
-      type: Boolean,
-      default: false,
-    },
+    rewardPoints: { type: Number, default: 0 },
+    isActive: { type: Boolean, default: true },
+    lastLogin: { type: Date },
+    isDelete: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-usersSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error: any) {
-    next(error);
-  }
-});
-
-// Compare password
-usersSchema.methods.comparePassword = async function (
-  password: string
-): Promise<boolean> {
-  return await bcrypt.compare(password, this.password);
-};
-
-// Generate JWT token
-usersSchema.methods.generateAuthToken = function (): string {
-  return jwt.sign(
-    { id: this._id, role: this.role },
-    process.env.JWT_SECRET || "your-secret-key",
-    { expiresIn: process.env.JWT_EXPIRES_IN || "30d" } as jwt.SignOptions
-  );
-};
 
 export const usersModel = mongoose.model<Iusers>("users", usersSchema);

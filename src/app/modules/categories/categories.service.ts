@@ -7,6 +7,15 @@ import AppError from "../../errors/AppError";
 export const categoriesService = {
   async postCategoriesIntoDB(data: any) {
     try {
+
+      // Step 1: Check if the categories already exists in the database
+      const isExist = await categoriesModel.findOne({
+        name: data.name,
+        parentCategory: data.parentCategory,
+      });
+      if (isExist) {
+        throw new AppError(status.CONFLICT, "category already exists");
+      }
       let result: any = await categoriesModel.create(data);
       result = {
         ...result.toObject(),
@@ -76,6 +85,9 @@ export const categoriesService = {
 
       if (!result) {
         throw new AppError(status.NOT_FOUND, "categories not found");
+      }
+      if (result.isDelete) {
+        throw new AppError(status.NOT_FOUND, "category already deleted");
       }
       result = {
         ...result.toObject(),
