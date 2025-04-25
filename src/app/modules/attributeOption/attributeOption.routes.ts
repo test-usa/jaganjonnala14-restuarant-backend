@@ -18,8 +18,8 @@ const { configurableCompression } = photoComposure();
 
 router.post(
   "/post_attribute_option",
-  // authenticate,
-  // authorize(ROLE.ADMIN),
+  authenticate,
+  authorize(ROLE.ADMIN),
   getMuler({
     upload_file_destination_path: "uploads",
     regex: /\.(jpg|jpeg|png|webp)$/,
@@ -41,8 +41,8 @@ router.get(
 );
 router.put(
   "/update_attribute_option/:id",
-  // authenticate,
-  //   authorize(ROLE.ADMIN, ROLE.VENDOR),
+  authenticate,
+    authorize(ROLE.ADMIN),
     getMuler({
       upload_file_destination_path: "uploads",
       regex: /\.(jpg|jpeg|png|webp)$/,
@@ -62,6 +62,8 @@ router.put(
 );
 router.delete(
   "/delete_attribute_option/:id",
+  authenticate,
+  authorize(ROLE.ADMIN),
   attributeOptionController.deleteAttributeOption
 );
 

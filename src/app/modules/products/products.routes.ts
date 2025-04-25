@@ -17,7 +17,7 @@ const { configurableCompression } = photoComposure();
 router.post(
     "/post_product",
     authenticate,
-    authorize(ROLE.VENDOR, ROLE.ADMIN),
+    authorize(ROLE.ADMIN),
     getMuler({
       upload_file_destination_path: "uploads",
       regex: /\.(jpg|jpeg|png|webp|mp4|mov)$/,
@@ -43,9 +43,12 @@ router.get("/get_all_product", productsController.getAllProducts);
 router.get("/get_single_product/:id", productsController.getSingleProducts);
 router.put(
   "/update_product/:id",
+  authenticate,
+  authorize(ROLE.ADMIN),
   validateRequest(productsUpdateValidation),
   productsController.updateProducts
 );
-router.delete("/delete_product/:id", productsController.deleteProducts);
+router.delete("/delete_product/:id",  authenticate,
+  authorize(ROLE.ADMIN), productsController.deleteProducts);
 
 export const productsRoutes = router;
