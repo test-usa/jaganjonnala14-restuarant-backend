@@ -16,7 +16,7 @@ const { configurableCompression } = photoComposure();
 router.post(
   "/post_brand",
   authenticate,
-  authorize(ROLE.ADMIN, ROLE.VENDOR),
+  authorize(ROLE.ADMIN),
   getMuler({
     upload_file_destination_path: "uploads",
     regex: /\.(jpg|jpeg|png|webp)$/,
@@ -36,7 +36,7 @@ router.get("/get_single_brand/:id", brandController.getSingleBrand);
 router.put(
   "/update_brand/:id",
   authenticate,
-  authorize(ROLE.ADMIN, ROLE.VENDOR),
+  authorize(ROLE.ADMIN),
   getMuler({
     upload_file_destination_path: "uploads",
     regex: /\.(jpg|jpeg|png|webp)$/,
@@ -54,6 +54,7 @@ router.put(
   validateRequest(brandUpdateValidation),
   brandController.updateBrand
 );
-router.delete("/delete_brand/:id", brandController.deleteBrand);
+router.delete("/delete_brand/:id",  authenticate,
+  authorize(ROLE.ADMIN), brandController.deleteBrand);
 
 export const brandRoutes = router;
