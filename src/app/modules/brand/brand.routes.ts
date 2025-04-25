@@ -21,9 +21,7 @@ router.post(
     upload_file_destination_path: "uploads",
     regex: /\.(jpg|jpeg|png|webp)$/,
     images: "jpg, jpeg, png, webp",
-  }).fields([
-    { name: "brandImage", maxCount: 1 }, 
-  ]),
+  }).fields([{ name: "brandImage", maxCount: 1 }]),
 
   configurableCompression("jpeg", 60),
   processImage({ fieldName: "brandImage" }),
@@ -41,9 +39,7 @@ router.put(
     upload_file_destination_path: "uploads",
     regex: /\.(jpg|jpeg|png|webp)$/,
     images: "jpg, jpeg, png, webp",
-  }).fields([
-    { name: "brandImage", maxCount: 1 }, 
-  ]),
+  }).fields([{ name: "brandImage", maxCount: 1 }]),
   configurableCompression("jpeg", 60),
   processImage({ fieldName: "brandImage" }),
   handleImageUpdate({
@@ -54,7 +50,11 @@ router.put(
   validateRequest(brandUpdateValidation),
   brandController.updateBrand
 );
-router.delete("/delete_brand/:id",  authenticate,
-  authorize(ROLE.ADMIN), brandController.deleteBrand);
+router.delete(
+  "/delete_brand/:id",
+  authenticate,
+  authorize(ROLE.ADMIN),
+  brandController.deleteBrand
+);
 
 export const brandRoutes = router;
