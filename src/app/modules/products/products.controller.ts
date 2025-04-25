@@ -36,7 +36,8 @@ const getSingleProducts = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateProducts = catchAsync(async (req: Request, res: Response) => {
-  const result = await productsService.updateProductsIntoDB(req.body);
+  const { id } = req.params;
+  const result = await productsService.updateProductsIntoDB(req.body, id);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

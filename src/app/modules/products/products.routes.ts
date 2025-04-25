@@ -45,6 +45,23 @@ router.put(
   "/update_product/:id",
   authenticate,
   authorize(ROLE.ADMIN),
+  getMuler({
+    upload_file_destination_path: "uploads",
+    regex: /\.(jpg|jpeg|png|webp|mp4|mov)$/,
+    images: "jpg, jpeg, png, webp",
+  }).fields([
+    { name: "images", maxCount: 10 },
+    { name: "thumbnail", maxCount: 1 },
+    { name: "video", maxCount: 1 },
+  ]),
+  configurableCompression("jpeg", 60), // optional for images
+  processMedia({
+    fields: [
+      { fieldName: "images", isMultiple: true },
+      { fieldName: "thumbnail" },
+      { fieldName: "video" },
+    ],
+  }),
   validateRequest(productsUpdateValidation),
   productsController.updateProducts
 );

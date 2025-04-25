@@ -39,7 +39,7 @@ export const productsService = {
         .paginate()
         .fields();
 
-      let result : any = await service_query.modelQuery
+      let result: any = await service_query.modelQuery
         .populate({
           path: "brand",
           match: { isDelete: false },
@@ -52,15 +52,7 @@ export const productsService = {
           path: "subcategories",
           match: { isDelete: false },
         })
-        .populate({
-          path: "vendor",
-          match: { isDelete: false },
-          populate: {
-            path: "user",
-            match: { isDelete: false },
-            select: "-password",
-          },
-        })
+
         .populate({
           path: "variant",
 
@@ -68,91 +60,66 @@ export const productsService = {
           populate: {
             path: "attributeOption",
             match: { isDelete: false },
-          }
+          },
         });
 
-        result = result.map((item: any) => {
-          const productData = item.toObject();
-          return {
-            ...productData,
-            images: productData.images.map((image: string) => {
-              return image
-                ? `${process.env.BASE_URL}/${image.replace(/\\/g, "/")}`
-                : null;
-            }),
-            thumbnail: productData.thumbnail
-              ? `${process.env.BASE_URL}/${productData.thumbnail.replace(
+      result = result.map((item: any) => {
+        const productData = item.toObject();
+        return {
+          ...productData,
+          images: productData.images.map((image: string) => {
+            return image
+              ? `${process.env.BASE_URL}/${image.replace(/\\/g, "/")}`
+              : null;
+          }),
+          thumbnail: productData.thumbnail
+            ? `${process.env.BASE_URL}/${productData.thumbnail.replace(
+                /\\/g,
+                "/"
+              )}`
+            : null,
+          video: productData.video
+            ? `${process.env.BASE_URL}/${productData.video.replace(/\\/g, "/")}`
+            : null,
+          brand: {
+            ...productData.brand,
+            brandImage: productData?.brand?.brandImage
+              ? `${process.env.BASE_URL}/${productData.brand.brandImage.replace(
                   /\\/g,
                   "/"
                 )}`
               : null,
-            video: productData.video
-              ? `${process.env.BASE_URL}/${productData.video.replace(
+          },
+          category: {
+            ...productData.category,
+            image: productData.category.image
+              ? `${process.env.BASE_URL}/${productData.category.image.replace(
                   /\\/g,
                   "/"
                 )}`
               : null,
-            brand: {
-              ...productData.brand,
-              brandImage: productData.brand.brandImage
-                ? `${process.env.BASE_URL}/${productData.brand.brandImage.replace(
-                    /\\/g,
-                    "/"
-                  )}`
-                : null,
-            },
-            category: {
-              ...productData.category,
-              image: productData.category.image   
-                ? `${process.env.BASE_URL}/${productData.category.image.replace(
-                    /\\/g,
-                    "/"
-                  )}`
-                : null,
-            },
-            subcategories: productData.subcategories.map((subcategory: any) => ({
-              ...subcategory,
-              image: subcategory.image
-                ? `${process.env.BASE_URL}/${subcategory.image.replace(
-                    /\\/g,
-                    "/"
-                  )}`
+          },
+          subcategories: productData.subcategories.map((subcategory: any) => ({
+            ...subcategory,
+            image: subcategory.image
+              ? `${process.env.BASE_URL}/${subcategory.image.replace(
+                  /\\/g,
+                  "/"
+                )}`
+              : null,
+          })),
+
+          variant: productData.variant.map((variant: any) => ({
+            ...variant,
+            attributeOption: variant.attributeOption.map((option: any) => ({
+              ...option,
+              image: option.image
+                ? `${process.env.BASE_URL}/${option.image.replace(/\\/g, "/")}`
                 : null,
             })),
-            vendor: {
-              ...productData.vendor,
-              logo: productData.vendor.logo
-                ? `${process.env.BASE_URL}/${productData.vendor.logo.replace(
-                    /\\/g,
-                    "/"
-                  )}`
-                : null,
-              user: {
-                ...productData.vendor.user,
-                image: productData.vendor.user.image
-                  ? `${process.env.BASE_URL}/${productData.vendor.user.image.replace(
-                      /\\/g,
-                      "/"
-                    )}`
-                  : null,
-              },
-            },
-            variant: productData.variant.map((variant: any) => ({
-              ...variant,
-              attributeOption: variant.attributeOption.map(
-                (option: any) => ({
-                  ...option,
-                  image: option.image
-                    ? `${process.env.BASE_URL}/${option.image.replace(
-                        /\\/g,
-                        "/"
-                      )}`
-                    : null,
-                })
-              ),
-            })),
-          };
-        }); 
+          })),
+        };
+      });
       const meta = await service_query.countTotal();
       return {
         result,
@@ -177,16 +144,27 @@ export const productsService = {
       }
     }
   },
-  async updateProductsIntoDB(data: any) {
+  async updateProductsIntoDB(data: any, id: string) {
+    
     try {
-      const isDeleted = await productsModel.findOne({ _id: data.id });
+
+      if(!data){
+        throw new AppError(status.BAD_REQUEST, "data is required");
+      }
+      const isDeleted = await productsModel.findOne({ _id: id });
       if (isDeleted?.isDelete) {
         throw new AppError(status.NOT_FOUND, "products is already deleted");
       }
 
-      const result = await productsModel.updateOne({ _id: data.id }, data, {
-        new: true,
-      });
+      const result = await productsModel.updateOne(
+        { _id: id },
+        {
+          $set: {
+            ...data,
+          },
+        },
+        { new: true }
+      );
       if (!result) {
         throw new Error("products not found.");
       }
