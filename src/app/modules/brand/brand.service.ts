@@ -7,6 +7,14 @@ import AppError from "../../errors/AppError";
 export const brandService = {
   async postBrandIntoDB(data: any) {
     try {
+      // Step 1: Check if the brand already exists in the database
+      const isExist = await brandModel.findOne({
+        name: data.name,
+      });
+      if (isExist) {
+        throw new AppError(status.CONFLICT, "Brand already exists");
+      }
+      // Step 2: Create a new brand in the database
       let result: any = await brandModel.create(data);
       result = {
         ...result.toObject(),
@@ -62,6 +70,7 @@ export const brandService = {
   },
   async getSingleBrandFromDB(id: string) {
     try {
+
       let result: any = await brandModel.findById(id);
       if (!result) {
         throw new AppError(status.NOT_FOUND, "Brand not found");

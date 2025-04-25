@@ -135,7 +135,83 @@ export const productsService = {
   },
   async getSingleProductsFromDB(id: string) {
     try {
-      return await productsModel.findById(id);
+      let result : any =  await productsModel.findById(id) .populate({
+        path: "brand",
+        match: { isDelete: false },
+      })
+      .populate({
+        path: "category",
+        match: { isDelete: false },
+      })
+      .populate({
+        path: "subcategories",
+        match: { isDelete: false },
+      })
+
+      .populate({
+        path: "variant",
+
+        match: { isDelete: false },
+        populate: {
+          path: "attributeOption",
+          match: { isDelete: false },
+        },
+      });
+      if (!result) {
+        throw new AppError(status.NOT_FOUND, "products not found");
+      }
+      if (result.isDelete) {
+        throw new AppError(status.NOT_FOUND, "products already deleted");
+      }
+      result = {
+        ...result.toObject(),
+        images: result.images.map((image: string) => {
+          return image
+            ? `${process.env.BASE_URL}/${image.replace(/\\/g, "/")}`
+            : null;
+        }),
+        thumbnail: result.thumbnail
+          ? `${process.env.BASE_URL}/${result.thumbnail.replace(/\\/g, "/")}`
+          : null,
+        video: result.video
+          ? `${process.env.BASE_URL}/${result.video.replace(/\\/g, "/")}`
+          : null,
+        brand: {
+          ...result.brand?.toObject(),
+          brandImage: result?.brand?.brandImage
+            ? `${process.env.BASE_URL}/${result.brand.brandImage.replace(
+                /\\/g,
+                "/"
+              )}`
+            : null,
+        },
+        category: {
+          ...result?.category.toObject(),
+          image: result.category.image
+            ? `${process.env.BASE_URL}/${result.category.image.replace(
+                /\\/g,
+                "/"
+              )}`
+            : null,
+        },
+        subcategories: result.subcategories.map((subcategory: any) => ({
+          ...subcategory,
+          image: subcategory.image
+            ? `${process.env.BASE_URL}/${subcategory.image.replace(/\\/g, "/")}`
+            : null,
+        })),
+
+        variant: result.variant.map((variant: any) => ({
+          ...variant?.toObject(),
+          attributeOption: variant.attributeOption.map((option: any) => ({
+            ...option?.toObject(),
+            image: option.image
+              ? `${process.env.BASE_URL}/${option.image.replace(/\\/g, "/")}`
+              : null,
+          })),
+        })),
+      };
+      return result;
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new Error(`${error.message}`);
