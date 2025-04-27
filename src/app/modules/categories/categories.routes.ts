@@ -28,6 +28,12 @@ router.post(
 
   configurableCompression("jpeg", 60),
   processImage({ fieldName: "image" }),
+  (req, res, next) => {
+    if (req.body?.isActive) {
+      req.body.isActive = req.body.isActive === "true" ? true : false;
+    }
+    next();
+  },
   validateRequest(categoriesPostValidation),
   categoriesController.postCategories
 );
@@ -45,6 +51,7 @@ router.put(
     regex: /\.(jpg|jpeg|png|webp)$/,
     images: "jpg, jpeg, png, webp",
   }).fields([{ name: "image", maxCount: 1 }]),
+
   configurableCompression("jpeg", 60),
   processImage({ fieldName: "image" }),
   handleImageUpdate({
@@ -52,6 +59,12 @@ router.put(
     imageField: "image",
     folderPath: "uploads",
   }),
+  (req, res, next) => {
+    if (req.body?.isActive) {
+      req.body.isActive = req.body.isActive === "true" ? true : false;
+    }
+    next();
+  },
   validateRequest(categoriesUpdateValidation),
   categoriesController.updateCategories
 );

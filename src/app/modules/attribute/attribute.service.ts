@@ -73,9 +73,7 @@ export const attributeService = {
       if (result?.isDelete) {
         throw new AppError(status.NOT_FOUND, "attribute is already deleted");
       }
-      if (!result?.isActive) {
-        throw new AppError(status.NOT_FOUND, "attribute is not active");
-      }
+   
 
       result = {
         ...result.toObject(),
@@ -106,9 +104,7 @@ export const attributeService = {
       if (attribute?.isDelete) {
         throw new AppError(status.NOT_FOUND, "attribute is already deleted");
       }
-      if (!attribute?.isActive) {
-        throw new AppError(status.NOT_FOUND, "attribute is not active");
-      }
+  
 
       const result = await attributeModel.updateOne({ _id: id }, data, {
         new: true,
@@ -134,10 +130,7 @@ export const attributeService = {
       if (isExist.isDelete) {
         throw new AppError(status.NOT_FOUND, "attribute already deleted");
       }
-      // Step 3: Check if the attribute is active
-      if (!isExist.isActive) {
-        throw new AppError(status.NOT_FOUND, "attribute already inactive");
-      }
+ 
 
       // Step 4: Delete the home attribute from the database
       await attributeModel.updateOne({ _id: id }, { isDelete: true });
