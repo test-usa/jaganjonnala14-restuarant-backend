@@ -27,6 +27,13 @@ router.post(
       { name: "thumbnail", maxCount: 1 },
       { name: "video", maxCount: 1 },
     ]),
+    (req, res, next) => {
+      req.body = {
+        ...req.body,
+        shipping : JSON.parse(req.body.shipping)
+      }
+      next()
+    },
     configurableCompression("jpeg", 60), // optional for images
     processMedia({
       fields: [
@@ -54,6 +61,13 @@ router.put(
     { name: "thumbnail", maxCount: 1 },
     { name: "video", maxCount: 1 },
   ]),
+  (req, res, next) => {
+    req.body = {
+      ...req.body,
+      shipping : JSON.parse(req.body.shipping)
+    }
+    next()
+  },
   configurableCompression("jpeg", 60), // optional for images
   processMedia({
     fields: [

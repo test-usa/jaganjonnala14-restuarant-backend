@@ -62,12 +62,13 @@ export const productsService = {
             match: { isDelete: false },
           },
         });
+   
 
       result = result.map((item: any) => {
         const productData = item.toObject();
         return {
           ...productData,
-          images: productData.images.map((image: string) => {
+          images: productData?.images.map((image: string) => {
             return image
               ? `${process.env.BASE_URL}/${image.replace(/\\/g, "/")}`
               : null;
@@ -81,7 +82,7 @@ export const productsService = {
           video: productData.video
             ? `${process.env.BASE_URL}/${productData.video.replace(/\\/g, "/")}`
             : null,
-          brand: {
+          brand: productData.brand != null ? {
             ...productData.brand,
             brandImage: productData?.brand?.brandImage
               ? `${process.env.BASE_URL}/${productData.brand.brandImage.replace(
@@ -89,19 +90,19 @@ export const productsService = {
                   "/"
                 )}`
               : null,
-          },
-          category: {
+          } : null,
+          category: productData.category != null ? {
             ...productData.category,
-            image: productData.category.image
+            image: productData?.category?.image
               ? `${process.env.BASE_URL}/${productData.category.image.replace(
                   /\\/g,
                   "/"
                 )}`
               : null,
-          },
+          } : null,
           subcategories: productData.subcategories.map((subcategory: any) => ({
             ...subcategory,
-            image: subcategory.image
+            image: subcategory?.image
               ? `${process.env.BASE_URL}/${subcategory.image.replace(
                   /\\/g,
                   "/"
@@ -113,7 +114,7 @@ export const productsService = {
             ...variant,
             attributeOption: variant.attributeOption.map((option: any) => ({
               ...option,
-              image: option.image
+              image: option?.image
                 ? `${process.env.BASE_URL}/${option.image.replace(/\\/g, "/")}`
                 : null,
             })),

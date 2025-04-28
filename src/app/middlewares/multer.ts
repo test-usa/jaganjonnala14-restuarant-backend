@@ -94,9 +94,9 @@ export const getMuler = ({
 
   return multer({
     storage: storage,
-    limits: {
-      fileSize: 10000000 * 3,
-    },
+    // limits: {
+    //   fileSize: 10000000 * 3,
+    // },
     fileFilter: (req, file, cb) => fileFilter(regex, images, file, cb),
   });
 };
