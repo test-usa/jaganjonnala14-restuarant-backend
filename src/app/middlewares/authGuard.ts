@@ -22,7 +22,6 @@ export const authenticate = async (
   if (!token) {
     throw new Error("No token provided");
   }
-  console.log("token");
   try {
     const decoded = (await jwt.verify(
       token,

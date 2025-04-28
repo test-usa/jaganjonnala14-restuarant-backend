@@ -69,8 +69,7 @@ export const handleImageUpdate = ({
         // No new image provided — optionally clean up old image?
         req.body[imageField] = oldImage || null;
       }
-      console.log("ddd", req.body)
-      return;
+   
       next();
     } catch (error) {
       next(error);
