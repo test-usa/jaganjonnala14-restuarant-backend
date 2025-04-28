@@ -16,6 +16,7 @@ export const handleImageUpdate = ({
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
+    
       const document = await model.findById(id);
       if (!document) {
         throw new Error("Document not found");
@@ -68,7 +69,8 @@ export const handleImageUpdate = ({
         // No new image provided — optionally clean up old image?
         req.body[imageField] = oldImage || null;
       }
-
+      console.log("ddd", req.body)
+      return;
       next();
     } catch (error) {
       next(error);

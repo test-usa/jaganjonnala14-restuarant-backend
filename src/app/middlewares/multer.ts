@@ -2,7 +2,6 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import { error } from "console";
 
 interface getMulterProps {
   upload_file_destination_path: any;

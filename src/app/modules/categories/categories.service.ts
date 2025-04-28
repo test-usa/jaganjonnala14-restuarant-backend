@@ -148,16 +148,16 @@ export const categoriesService = {
       if (!isExist.isActive) {
         throw new AppError(status.NOT_FOUND, "categories already inactive");
       }
-      // Step 4: Check if the categories has any child categories
-      const hasChildCategories = await categoriesModel.findOne({
-        parentCategory: id,
-      });
-      if (hasChildCategories) {
-        throw new AppError(
-          status.NOT_FOUND,
-          "categories has child categories. Please delete them first."
-        );
-      }
+      // // Step 4: Check if the categories has any child categories
+      // const hasChildCategories = await categoriesModel.findOne({
+      //   parentCategory: id,
+      // });
+      // if (hasChildCategories) {
+      //   throw new AppError(
+      //     status.NOT_FOUND,
+      //     "categories has child categories. Please delete them first."
+      //   );
+      // }
 
       // Step 4: Delete the home categories from the database
       await categoriesModel.updateOne({ _id: id }, { isDelete: true });
