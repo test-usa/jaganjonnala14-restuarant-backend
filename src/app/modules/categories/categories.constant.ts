@@ -1,1 +1,1 @@
-export const CATEGORIES_SEARCHABLE_FIELDS = [];
+export const CATEGORIES_SEARCHABLE_FIELDS = ["name"];
