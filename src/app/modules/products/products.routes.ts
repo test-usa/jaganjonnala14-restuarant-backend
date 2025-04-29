@@ -65,7 +65,7 @@ router.put(
     console.log(req.body)
     req.body = {
       ...req.body,
-      shipping : JSON?.parse(req?.body?.shipping) || null
+      shipping : JSON?.parse(req?.body?.shipping) 
     }
     next()
   },
