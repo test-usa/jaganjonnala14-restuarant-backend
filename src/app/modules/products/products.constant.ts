@@ -1,1 +1,1 @@
-export const PRODUCTS_SEARCHABLE_FIELDS = [];
+export const PRODUCTS_SEARCHABLE_FIELDS = ["name", "sku"];

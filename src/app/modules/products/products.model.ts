@@ -22,17 +22,17 @@ const productsSchema = new mongoose.Schema(
     images: [{ type: String, required: true, default: null }],
     thumbnail: { type: String, default: null },
     video: { type: String, default: null },
-    
+
     tags: [{ type: String }],
 
     variant: [{ type: mongoose.Types.ObjectId, ref: "attribute" }],
 
     shipping: {
-      weight: { type: Number },
+      weight: { type: Number, default: 0 },
       dimensions: {
-        length: { type: Number },
-        width: { type: Number },
-        height: { type: Number },
+        length: { type: Number, default: 0 },
+        width: { type: Number, default: 0 },
+        height: { type: Number, default: 0 },
       },
     },
 
