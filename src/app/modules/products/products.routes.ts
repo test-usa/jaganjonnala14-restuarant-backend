@@ -10,6 +10,10 @@ import { ROLE } from "../../constant/role";
 import { getMuler } from "../../middlewares/multer";
 import { photoComposure } from "../../middlewares/photoComposure";
 import { processMedia } from "../../middlewares/processMedia";
+import { updateProductProcessMedia } from "../../middlewares/updateProductProcessMedia";
+import { handleImageUpdate } from "../../middlewares/handleImageUpdate";
+import { productsModel } from "./products.model";
+import { handleMultipleFile } from "../../middlewares/handleMultipleFile";
 
 const router = express.Router();
 const { configurableCompression } = photoComposure();
@@ -70,13 +74,30 @@ router.put(
     next()
   },
   configurableCompression("jpeg", 60), // optional for images
-  processMedia({
+  updateProductProcessMedia({
     fields: [
       { fieldName: "images", isMultiple: true },
       { fieldName: "thumbnail" },
       { fieldName: "video" },
     ],
   }),
+    handleImageUpdate({
+      model: productsModel,
+      imageField: "thumbnail",
+      folderPath: "uploads",
+    }),
+    handleImageUpdate({
+      model: productsModel,
+      imageField: "video",
+      folderPath: "uploads",
+    }),
+ 
+    handleMultipleFile({
+      model: productsModel,
+      fileField: "images",
+      folderPath: "uploads",
+    }),
+
   validateRequest(productsUpdateValidation),
   productsController.updateProducts
 );
