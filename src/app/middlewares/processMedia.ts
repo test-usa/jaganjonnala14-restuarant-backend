@@ -17,6 +17,7 @@ interface IProcessProductMedia {
   }[];
 }
 
+
 export const processMedia = ({ fields }: IProcessProductMedia) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
