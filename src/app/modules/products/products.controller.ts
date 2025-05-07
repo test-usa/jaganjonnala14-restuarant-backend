@@ -24,6 +24,16 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getProductsByCategory = catchAsync(async (req: Request, res: Response) => {
+  const categoryId = req.params.id
+  const result = await productsService.getProductsByCategoryFromDB(req.query, categoryId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Product fetched successfully",
+    data: result,
+  });
+});
 
 const getSingleProducts = catchAsync(async (req: Request, res: Response) => {
   const result = await productsService.getSingleProductsFromDB(req.params.id);
@@ -62,4 +72,6 @@ export const productsController = {
   getSingleProducts,
   updateProducts,
   deleteProducts,
+  
+  getProductsByCategory
 };

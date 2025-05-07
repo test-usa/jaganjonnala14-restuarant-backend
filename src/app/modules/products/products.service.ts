@@ -134,6 +134,114 @@ export const productsService = {
       }
     }
   },
+  async getProductsByCategoryFromDB(query: any, categoryId: string) {
+    try {
+      const service_query = new QueryBuilder(productsModel.find({
+        $or: [
+          { category: categoryId },
+        ],
+      }), query)
+        .search(PRODUCTS_SEARCHABLE_FIELDS)
+        .filter()
+        .sort()
+        .paginate()
+        .fields();
+
+      let result: any = await service_query.modelQuery
+        .populate({
+          path: "brand",
+          match: { isDelete: false },
+        })
+        .populate({
+          path: "category",
+          match: { isDelete: false },
+        })
+        .populate({
+          path: "subcategories",
+          match: { isDelete: false },
+        })
+
+        .populate({
+          path: "variant",
+
+          match: { isDelete: false },
+          populate: {
+            path: "attributeOption",
+            match: { isDelete: false },
+          },
+        });
+   
+
+      result = result.map((item: any) => {
+        const productData = item.toObject();
+        return {
+          ...productData,
+          images: productData?.images.map((image: string) => {
+            return image
+              ? `${process.env.BASE_URL}/${image.replace(/\\/g, "/")}`
+              : null;
+          }),
+          thumbnail: productData.thumbnail
+            ? `${process.env.BASE_URL}/${productData.thumbnail.replace(
+                /\\/g,
+                "/"
+              )}`
+            : null,
+          video: productData.video
+            ? `${process.env.BASE_URL}/${productData.video.replace(/\\/g, "/")}`
+            : null,
+          brand: productData.brand != null ? {
+            ...productData.brand,
+            brandImage: productData?.brand?.brandImage
+              ? `${process.env.BASE_URL}/${productData.brand.brandImage.replace(
+                  /\\/g,
+                  "/"
+                )}`
+              : null,
+          } : null,
+          category: productData.category != null ? {
+            ...productData.category,
+            image: productData?.category?.image
+              ? `${process.env.BASE_URL}/${productData.category.image.replace(
+                  /\\/g,
+                  "/"
+                )}`
+              : null,
+          } : null,
+          subcategories: productData.subcategories.map((subcategory: any) => ({
+            ...subcategory,
+            image: subcategory?.image
+              ? `${process.env.BASE_URL}/${subcategory.image.replace(
+                  /\\/g,
+                  "/"
+                )}`
+              : null,
+          })),
+
+          variant: productData.variant.map((variant: any) => ({
+            ...variant,
+            attributeOption: variant.attributeOption.map((option: any) => ({
+              ...option,
+              image: option?.image
+                ? `${process.env.BASE_URL}/${option.image.replace(/\\/g, "/")}`
+                : null,
+            })),
+          })),
+        };
+      });
+      const meta = await service_query.countTotal();
+      return {
+        result,
+        meta,
+      };
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new Error(`${error.message}`);
+      } else {
+        throw new Error("An unknown error occurred while fetching by ID.");
+      }
+    }
+  },
   async getSingleProductsFromDB(id: string) {
     try {
       let result : any =  await productsModel.findById(id) .populate({

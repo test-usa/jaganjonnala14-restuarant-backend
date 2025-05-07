@@ -103,5 +103,6 @@ router.put(
 );
 router.delete("/delete_product/:id",  authenticate,
   authorize(ROLE.ADMIN), productsController.deleteProducts);
+router.get("/get_products_by_category/:id", productsController.getProductsByCategory)
 
 export const productsRoutes = router;
