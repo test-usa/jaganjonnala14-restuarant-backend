@@ -5,6 +5,8 @@ import status from "http-status";
 import AppError from "../../errors/AppError";
 import path from "path";
 
+//comment added
+
 export const productsService = {
   async postProductsIntoDB(data: any) {
     try {
@@ -62,7 +64,6 @@ export const productsService = {
             match: { isDelete: false },
           },
         });
-   
 
       result = result.map((item: any) => {
         const productData = item.toObject();
@@ -82,24 +83,28 @@ export const productsService = {
           video: productData.video
             ? `${process.env.BASE_URL}/${productData.video.replace(/\\/g, "/")}`
             : null,
-          brand: productData.brand != null ? {
-            ...productData.brand,
-            brandImage: productData?.brand?.brandImage
-              ? `${process.env.BASE_URL}/${productData.brand.brandImage.replace(
-                  /\\/g,
-                  "/"
-                )}`
+          brand:
+            productData.brand != null
+              ? {
+                  ...productData.brand,
+                  brandImage: productData?.brand?.brandImage
+                    ? `${
+                        process.env.BASE_URL
+                      }/${productData.brand.brandImage.replace(/\\/g, "/")}`
+                    : null,
+                }
               : null,
-          } : null,
-          category: productData.category != null ? {
-            ...productData.category,
-            image: productData?.category?.image
-              ? `${process.env.BASE_URL}/${productData.category.image.replace(
-                  /\\/g,
-                  "/"
-                )}`
+          category:
+            productData.category != null
+              ? {
+                  ...productData.category,
+                  image: productData?.category?.image
+                    ? `${
+                        process.env.BASE_URL
+                      }/${productData.category.image.replace(/\\/g, "/")}`
+                    : null,
+                }
               : null,
-          } : null,
           subcategories: productData.subcategories.map((subcategory: any) => ({
             ...subcategory,
             image: subcategory?.image
@@ -136,11 +141,12 @@ export const productsService = {
   },
   async getProductsByCategoryFromDB(query: any, categoryId: string) {
     try {
-      const service_query = new QueryBuilder(productsModel.find({
-        $or: [
-          { category: categoryId },
-        ],
-      }), query)
+      const service_query = new QueryBuilder(
+        productsModel.find({
+          $or: [{ category: categoryId }],
+        }),
+        query
+      )
         .search(PRODUCTS_SEARCHABLE_FIELDS)
         .filter()
         .sort()
@@ -152,7 +158,7 @@ export const productsService = {
           path: "brand",
           match: { isDelete: false },
         })
-        
+
         .populate({
           path: "category",
           match: { isDelete: false },
@@ -171,7 +177,6 @@ export const productsService = {
             match: { isDelete: false },
           },
         });
-   
 
       result = result.map((item: any) => {
         const productData = item.toObject();
@@ -191,24 +196,28 @@ export const productsService = {
           video: productData.video
             ? `${process.env.BASE_URL}/${productData.video.replace(/\\/g, "/")}`
             : null,
-          brand: productData.brand != null ? {
-            ...productData.brand,
-            brandImage: productData?.brand?.brandImage
-              ? `${process.env.BASE_URL}/${productData.brand.brandImage.replace(
-                  /\\/g,
-                  "/"
-                )}`
+          brand:
+            productData.brand != null
+              ? {
+                  ...productData.brand,
+                  brandImage: productData?.brand?.brandImage
+                    ? `${
+                        process.env.BASE_URL
+                      }/${productData.brand.brandImage.replace(/\\/g, "/")}`
+                    : null,
+                }
               : null,
-          } : null,
-          category: productData.category != null ? {
-            ...productData.category,
-            image: productData?.category?.image
-              ? `${process.env.BASE_URL}/${productData.category.image.replace(
-                  /\\/g,
-                  "/"
-                )}`
+          category:
+            productData.category != null
+              ? {
+                  ...productData.category,
+                  image: productData?.category?.image
+                    ? `${
+                        process.env.BASE_URL
+                      }/${productData.category.image.replace(/\\/g, "/")}`
+                    : null,
+                }
               : null,
-          } : null,
           subcategories: productData.subcategories.map((subcategory: any) => ({
             ...subcategory,
             image: subcategory?.image
@@ -245,28 +254,30 @@ export const productsService = {
   },
   async getSingleProductsFromDB(id: string) {
     try {
-      let result : any =  await productsModel.findById(id) .populate({
-        path: "brand",
-        match: { isDelete: false },
-      })
-      .populate({
-        path: "category",
-        match: { isDelete: false },
-      })
-      .populate({
-        path: "subcategories",
-        match: { isDelete: false },
-      })
-
-      .populate({
-        path: "variant",
-
-        match: { isDelete: false },
-        populate: {
-          path: "attributeOption",
+      let result: any = await productsModel
+        .findById(id)
+        .populate({
+          path: "brand",
           match: { isDelete: false },
-        },
-      });
+        })
+        .populate({
+          path: "category",
+          match: { isDelete: false },
+        })
+        .populate({
+          path: "subcategories",
+          match: { isDelete: false },
+        })
+
+        .populate({
+          path: "variant",
+
+          match: { isDelete: false },
+          populate: {
+            path: "attributeOption",
+            match: { isDelete: false },
+          },
+        });
       if (!result) {
         throw new AppError(status.NOT_FOUND, "products not found");
       }
@@ -331,10 +342,8 @@ export const productsService = {
     }
   },
   async updateProductsIntoDB(data: any, id: string) {
-    
     try {
-
-      if(!data){
+      if (!data) {
         throw new AppError(status.BAD_REQUEST, "data is required");
       }
       const isDeleted = await productsModel.findOne({ _id: id });
