@@ -152,6 +152,7 @@ export const productsService = {
           path: "brand",
           match: { isDelete: false },
         })
+        
         .populate({
           path: "category",
           match: { isDelete: false },
