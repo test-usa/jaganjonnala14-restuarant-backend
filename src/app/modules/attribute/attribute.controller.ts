@@ -36,7 +36,6 @@ const getSingleAttribute = catchAsync(async (req: Request, res: Response) => {
 
 const updateAttribute = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  console.log(req.body)
   const result = await attributeService.updateAttributeIntoDB(req.body, id);
   sendResponse(res, {
     statusCode: status.OK,

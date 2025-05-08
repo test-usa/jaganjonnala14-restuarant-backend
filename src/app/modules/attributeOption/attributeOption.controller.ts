@@ -47,7 +47,6 @@ const getSingleAttributeOption = catchAsync(
 const updateAttributeOption = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-   console.log(req.body)
     const result = await attributeOptionService.updateAttributeOptionIntoDB(
       req.body, id
     );

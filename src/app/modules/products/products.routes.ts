@@ -66,7 +66,6 @@ router.put(
     { name: "video", maxCount: 1 },
   ]),
   (req, res, next) => {
-    console.log(req.body)
     req.body = {
       ...req.body,
       shipping : JSON?.parse(req?.body?.shipping) 
