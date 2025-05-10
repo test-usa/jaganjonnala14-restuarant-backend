@@ -1,1 +1,0 @@
-export const EMPLOYEE_SEARCHABLE_FIELDS = [];

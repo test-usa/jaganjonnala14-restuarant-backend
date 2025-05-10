@@ -1,14 +1,55 @@
-export interface Iusers {
+export type IUserRole =
+  | "admin"
+  | "restaurant_owner"
+  | "staff"
+  | "customer"
+  | "manager"
+  | "dine in"
+  | "waiter"
+  | "chief"
+  | "cashier"
+  | "maintenance";
+
+export interface IRestaurant {
   name: string;
-  _id?: string;
-  email?: string;
+  businessName: string;
+  businessEmail: string;
   phone: string;
-  password: string;
-  image?: string;
-  address?: string;
-  role?: "admin" | "employee" | "customer";
-  rewardPoints?: number;
-  isActive?: boolean;
+  gstRate: string;
+  cgstRate: string;
+  sgstRate: string;
+  address: string;
+  logo: string;
+  tagline: string;
+  coverPhoto: string[];
+  description: string;
+  referralCode: string;
+}
+
+export interface Iusers {
+  _id?: string;
+  user: {
+    name: string;
+    email?: string;
+    fullName: string;
+    nickName: string;
+    gender: "male" | "female";
+    country: string;
+    language: string;
+    timeZone: string;
+    phone: string;
+    password: string;
+    image?: string;
+    address?: string;
+    role?: IUserRole;
+  };
+  restaurant: IRestaurant;
+  staff: {
+    workDays: string;
+    workTime: string;
+  } | null;
+  status: "active" | "inactive" | "pending";
+
   lastLogin?: Date;
   isDelete?: boolean;
   createdAt?: Date;

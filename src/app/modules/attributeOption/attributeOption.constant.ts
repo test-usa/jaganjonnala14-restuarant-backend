@@ -1,1 +1,0 @@
-export const ATTRIBUTEOPTION_SEARCHABLE_FIELDS = ["name"];

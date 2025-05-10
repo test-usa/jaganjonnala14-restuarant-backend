@@ -1,1 +1,0 @@
-export const CUSTOMER_SEARCHABLE_FIELDS = [];
