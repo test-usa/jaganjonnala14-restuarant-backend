@@ -62,11 +62,36 @@ const Login = catchAsync(
       config.JWT_ACCESS_TOKEN_EXPIRES_IN!
     );
 
+    // generate refresh token:
     const refreshToken = generateToken(
       payload,
       config.JWT_REFRESH_TOKEN_SECRET!,
       config.JWT_REFRESH_TOKEN_EXPIRES_IN!
     );
+
+    // Set refresh token in cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: config.ENVIRONMENT === "production",
+      sameSite: config.ENVIRONMENT === "production",
+      maxAge: parseInt(config.JWT_REFRESH_TOKEN_EXPIRES_IN!) * 1000,
+    });
+
+    //  send access token and user info:
+
+    sendResponse(res, {
+      statusCode: status.OK,
+      success: true,
+      message: "Login successful",
+      data: {
+        accessToken,
+        user: {
+          name: user.user.name,
+          email: user.user.email,
+          role: user.user.role,
+        },
+      },
+    });
   }
 );
 
@@ -170,13 +195,13 @@ const changePassword = catchAsync(
     }
 
     // Compare old password using bcrypt directly
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    const isMatch = await bcrypt.compare(oldPassword, user.user.password);
     if (!isMatch) {
       throw new AppError(status.UNAUTHORIZED, "Old password is incorrect");
     }
 
     // Update password
-    user.password = newPassword;
+    user.user.password = newPassword;
     await usersModel.updateOne({ _id: user._id }, { password: newPassword });
 
     sendResponse(res, {
@@ -202,7 +227,7 @@ const resetPassword = catchAsync(
     }
 
     // Update password
-    user.password = newPassword;
+    user.user.password = newPassword;
     await usersModel.updateOne({ _id: user._id }, { password: newPassword });
 
     sendResponse(res, {
