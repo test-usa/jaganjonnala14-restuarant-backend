@@ -10,7 +10,6 @@
     "prettier:fix": "prettier --write src"
   },
   "dependencies": {
-    "appwrite": "^17.0.2",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
