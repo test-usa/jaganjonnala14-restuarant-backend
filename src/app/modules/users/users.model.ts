@@ -1,58 +1,65 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { Iusers } from "./users.interface";
-import bcrypt from "bcryptjs";
 
-const usersSchema = new mongoose.Schema<Iusers>(
+const UserSchema = new Schema<Iusers>(
   {
-    name: {
-      type: String,
-      required: [true, "Name is required"],
-      trim: true,
-      maxlength: [50, "Name cannot exceed 50 characters"],
-    },
-    email: {
-      type: String,
-      trim: true,
-      lowercase: true,
-      validate: {
-        validator: function (value: string) {
-          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-        },
-        message: (props) => `${props.value} is not a valid email!`,
+    user: {
+      name: { type: String },
+      email: { type: String },
+      fullName: { type: String },
+      nickName: { type: String },
+      gender: { type: String, enum: ["male", "female"] },
+      country: { type: String },
+      language: { type: String },
+      timeZone: { type: String },
+      phone: { type: String },
+      password: { type: String },
+      image: { type: String },
+      address: { type: String },
+      role: {
+        type: String,
+        enum: [
+          "admin",
+          "restaurant_owner",
+          "staff",
+          "customer",
+          "manager",
+          "dine in",
+          "waiter",
+          "chief",
+          "cashier",
+          "maintenance",
+        ],
       },
     },
-    phone: {
-      type: String,
-      required: [true, "Phone number is required"],
-      trim: true,
-      validate: {
-        validator: function (value: string) {
-          return /^(?:\+8801|8801|01)[3-9]\d{8}$/.test(value);
-        },
-        message: (props) =>
-          `${props.value} is not a valid Bangladeshi phone number!`,
-      },
+    restaurant: {
+      name: { type: String },
+      businessName: { type: String },
+      businessEmail: { type: String },
+      phone: { type: String },
+      gstRate: { type: String },
+      cgstRate: { type: String },
+      sgstRate: { type: String },
+      address: { type: String },
+      logo: { type: String },
+      tagline: { type: String },
+      coverPhoto: [{ type: String }],
+      description: { type: String },
+      referralCode: { type: String },
     },
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-      minlength: [6, "Password must be at least 6 characters"],
-      select: false,
+    staff: {
+      workDays: { type: String },
+      workTime: { type: String },
     },
-    image: { type: String },
-    address: { type: String, trim: true },
-    role: {
+    status: {
       type: String,
-      enum: ["admin", "employee", "customer"],
-      default: "customer",
+      enum: ["active", "inactive", "pending"],
+      required: true,
     },
-    rewardPoints: { type: Number, default: 0 },
-    isActive: { type: Boolean, default: true },
     lastLogin: { type: Date },
     isDelete: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-
-export const usersModel = mongoose.model<Iusers>("users", usersSchema);
+export const usersModel = mongoose.model<Iusers>("users", UserSchema);

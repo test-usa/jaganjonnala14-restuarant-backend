@@ -64,14 +64,25 @@ export const createSuperAdmin = async () => {
     const hashedPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD!, 10);
 
     await usersModel.create({
-      name: process.env.SUPER_ADMIN_NAME,
-      email: process.env.SUPER_ADMIN_EMAIL,
-      password: hashedPassword,
-      phone: process.env.SUPER_ADMIN_PHONE,
-      address: process.env.SUPER_ADMIN_ADDRESS,
-      role: 'admin',
-      isActive: true,
-      isDelete: false,
+      user: {
+        name: "adminbd",
+        email: "admin@demo.com",
+        fullName: "Admin Bangladesh",
+        nickName: "AdminBD",
+        gender: "male",
+        country: "Bangladesh",
+        language: "Bengali",
+        timeZone: "Asia/Dhaka",
+        phone: "+8801700000000",
+        password: "SecurePass123!",
+        image: "https://example.com/images/admin.jpg",
+        address: "Road 10, Gulshan 2, Dhaka 1212, Bangladesh",
+        role: "admin",
+      },
+      restaurant: null,
+      staff: null, 
+      status: "active",
+
     });
 
     console.log('🚀 Super admin created successfully');
