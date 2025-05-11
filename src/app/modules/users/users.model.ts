@@ -1,6 +1,5 @@
 import mongoose, { Schema } from "mongoose";
 import { Iusers } from "./users.interface";
-import { nullable } from "zod";
 
 const UserSchema = new Schema<Iusers>(
   {

@@ -10,13 +10,14 @@ router.post(
   validateRequest(userInputSchema),
   usersController.postUsers
 );
+
 router.get("/get_all_users", usersController.getAllUsers);
 router.get("/get_single_users/:id", usersController.getSingleUsers);
 router.put(
   "/update_users/:id",
   validateRequest(usersUpdateValidation),
   usersController.updateUsers
-  
+
 );
 router.delete("/delete_users/:id", usersController.deleteUsers);
 
