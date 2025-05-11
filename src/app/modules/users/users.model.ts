@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { Iusers } from "./users.interface";
+import { nullable } from "zod";
 
 const UserSchema = new Schema<Iusers>(
   {
@@ -14,7 +15,7 @@ const UserSchema = new Schema<Iusers>(
       timeZone: { type: String },
       phone: { type: String },
       password: { type: String },
-      image: { type: String },
+      image: { type: String, nullable : true },
       address: { type: String },
       role: {
         type: String,
@@ -41,7 +42,7 @@ const UserSchema = new Schema<Iusers>(
       cgstRate: { type: String },
       sgstRate: { type: String },
       address: { type: String },
-      logo: { type: String },
+      logo: { type: String, nullable: true },
       tagline: { type: String },
       coverPhoto: [{ type: String }],
       description: { type: String },

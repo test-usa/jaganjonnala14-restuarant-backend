@@ -14,18 +14,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-
-
-app.use(cors({
-  origin: "http://localhost:3000", // frontend URL
-  credentials: true               // jodi cookie/token pathaos
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000", // frontend URL
+    credentials: true, // jodi cookie/token pathaos
+  })
+);
 
 // Set up static file serving for uploads
 const uploadsPath = path.resolve("uploads");
 
 if (!fs.existsSync(uploadsPath)) {
-  fs.mkdirSync(uploadsPath)}
+  fs.mkdirSync(uploadsPath);
+}
 
 app.use("/uploads", express.static(uploadsPath));
 
@@ -33,7 +34,6 @@ app.use("/uploads", express.static(uploadsPath));
 app.get("/", (req, res) => {
   res.send("Hey my name is mohebulla!");
 });
-
 
 // routes:
 app.use("/api/v1", router);
@@ -44,52 +44,77 @@ app.use(notFound);
 // global error handler:
 app.use(globalErrorHandler);
 
-
-export const createSuperAdmin = async () => {
+export const createAdmin = async () => {
   try {
-    const existingAdmin = await usersModel.findOne({ $or: [
-      {
-        email: process.env.SUPER_ADMIN_EMAIL,
-      },
-      {
-        phone: process.env.SUPER_ADMIN_PHONE,
-      }
-    ] });
+    const existingAdmin = await usersModel.findOne({
+      "user.role": "admin",
+    });
 
     if (existingAdmin) {
-      console.log('✅ Super admin already exists');
+      console.log("✅ Super admin already exists");
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD!, 10);
+    const {
+      SUPER_ADMIN_NAME,
+      SUPER_ADMIN_EMAIL,
+      SUPER_ADMIN_FULLNAME,
+      SUPER_ADMIN_NICKNAME,
+      SUPER_ADMIN_GENDER,
+      SUPER_ADMIN_COUNTRY,
+      SUPER_ADMIN_LANGUAGE,
+      SUPER_ADMIN_TIMEZONE,
+      SUPER_ADMIN_PHONE,
+      SUPER_ADMIN_PASSWORD,
+      SUPER_ADMIN_ADDRESS,
+    } = process.env;
+
+    if (
+      !SUPER_ADMIN_NAME ||
+      !SUPER_ADMIN_EMAIL ||
+      !SUPER_ADMIN_FULLNAME ||
+      !SUPER_ADMIN_NICKNAME ||
+      !SUPER_ADMIN_GENDER ||
+      !SUPER_ADMIN_COUNTRY ||
+      !SUPER_ADMIN_LANGUAGE ||
+      !SUPER_ADMIN_TIMEZONE ||
+      !SUPER_ADMIN_PHONE ||
+      !SUPER_ADMIN_PASSWORD ||
+      !SUPER_ADMIN_ADDRESS
+    ) {
+      throw new Error("🚫 Missing SUPER_ADMIN environment variables.");
+    }
+
+    const hashedPassword = await bcrypt.hash(SUPER_ADMIN_PASSWORD, 10);
 
     await usersModel.create({
       user: {
-        name: "adminbd",
-        email: "admin@demo.com",
-        fullName: "Admin Bangladesh",
-        nickName: "AdminBD",
-        gender: "male",
-        country: "Bangladesh",
-        language: "Bengali",
-        timeZone: "Asia/Dhaka",
-        phone: "+8801700000000",
-        password: "SecurePass123!",
-        image: "https://example.com/images/admin.jpg",
-        address: "Road 10, Gulshan 2, Dhaka 1212, Bangladesh",
+        name: SUPER_ADMIN_NAME,
+        email: SUPER_ADMIN_EMAIL,
+        fullName: SUPER_ADMIN_FULLNAME,
+        nickName: SUPER_ADMIN_NICKNAME,
+        gender: SUPER_ADMIN_GENDER as "male" | "female",
+        country: SUPER_ADMIN_COUNTRY,
+        language: SUPER_ADMIN_LANGUAGE,
+        timeZone: SUPER_ADMIN_TIMEZONE,
+        phone: SUPER_ADMIN_PHONE,
+        password: hashedPassword,
+        image: null,
+        address: SUPER_ADMIN_ADDRESS,
         role: "admin",
       },
       restaurant: null,
-      staff: null, 
+      staff: null,
       status: "active",
-
+      isDelete: false,
     });
 
-    console.log('🚀 Super admin created successfully');
+    console.log("🚀 Super admin created successfully");
   } catch (error) {
-    console.error('❌ Error creating super admin:', error);
+    console.error("❌ Error creating super admin:", error);
   }
 };
-createSuperAdmin();
+
+createAdmin();
 
 export default app;
