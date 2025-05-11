@@ -1,7 +1,6 @@
 import express, { Application } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import config from "./app/config";
 import notFound from "./app/middlewares/notFound";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import router from "./app/routes";
@@ -9,10 +8,15 @@ import { usersModel } from "./app/modules/users/users.model";
 import bcrypt from "bcryptjs";
 import path from "path";
 import fs from "fs";
+import passport from "passport";
+import "../src/app/utils/passport.ts"
 const app: Application = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+
+
 
 app.use(
   cors({

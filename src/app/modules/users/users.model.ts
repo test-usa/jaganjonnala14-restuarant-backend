@@ -7,6 +7,8 @@ const UserSchema = new Schema<Iusers>(
       name: { type: String },
       email: { type: String },
       fullName: { type: String },
+      providerId: { type: String },
+      provider: { type: String },
       nickName: { type: String },
       gender: { type: String, enum: ["male", "female"] },
       country: { type: String },

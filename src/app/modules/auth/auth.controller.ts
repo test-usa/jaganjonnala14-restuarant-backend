@@ -95,6 +95,60 @@ const Login = catchAsync(
   }
 );
 
+const OAuthCallback = (req: Request, res: Response) => {
+  try {
+    const user = req.user as any;
+
+    const payload = {
+      userId: user._id.toString(),
+      role: user.role,
+    };
+
+    // Generate access token
+    const accessToken = generateToken(
+      payload,
+      config.JWT_ACCESS_TOKEN_SECRET!,
+      config.JWT_ACCESS_TOKEN_EXPIRES_IN!
+    );
+
+    // Generate refresh token
+    const refreshToken = generateToken(
+      payload,
+      config.JWT_REFRESH_TOKEN_SECRET!,
+      config.JWT_REFRESH_TOKEN_EXPIRES_IN!
+    );
+
+    // Set refresh token in cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: config.ENVIRONMENT === "production",
+      sameSite: config.ENVIRONMENT === "production" ? "strict" : "lax",
+      maxAge: parseInt(config.JWT_REFRESH_TOKEN_EXPIRES_IN!) * 1000,
+    });
+
+    // Send access token + user info
+    // return sendResponse(res, {
+    //   statusCode: status.OK,
+    //   success: true,
+    //   message: "Login successful",
+    //   data: {
+    //     accessToken,
+    //     user: {
+    //       name: user.user?.fullName || user.name,
+    //       email: user.user?.email || user.email,
+    //       image: user.user?.image || user.image,
+    //       role: user.role,
+    //     },
+    //   },
+    // });
+
+    // Or redirect if needed:
+    res.redirect(`${process.env.FRONTEND_URL}/oauth-success?accessToken=${accessToken}`);
+  } catch (error) {
+    console.error("OAuth Callback Error:", error);
+    res.status(500).json({ success: false, message: "OAuth login failed" });
+  }
+};
 // 6. Logout
 const Logout = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -374,6 +428,7 @@ const verifyEmailOTP = catchAsync(
 export const authController = {
   Register,
   Login,
+  OAuthCallback,
   Logout,
   getUserProfile,
   updateUserProfile,

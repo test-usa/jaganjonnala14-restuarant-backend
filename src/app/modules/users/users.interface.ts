@@ -30,6 +30,8 @@ export interface Iusers {
   _id?: string;
   user: {
     name: string;
+    providerId: string | null;   // google or facebook id
+    provider: string | null;   // "google" | "facebook"
     email?: string;
     fullName: string;
     nickName: string;

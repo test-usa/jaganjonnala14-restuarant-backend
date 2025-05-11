@@ -1,9 +1,0 @@
-import { Client } from 'appwrite';
-
-const client = new Client();
-client
-    .setEndpoint('https://fra.cloud.appwrite.io/v1')
-    .setProject('682022370018a4ae7d06');
-
-    // https://fra.cloud.appwrite.io/v1  // api endpoint
-    // 682022370018a4ae7d06 // project id
