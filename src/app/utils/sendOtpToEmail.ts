@@ -1,4 +1,3 @@
-// utils/sendOtpToEmail.ts
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
@@ -12,6 +11,9 @@ export const sendOtpToEmail = async (email: string, otp: string) => {
         pass: process.env.EMAIL_PASS,
       },
     });
+
+    // Create a verification URL, for example
+    const verificationUrl = `${process.env.FRONTEND_URL}/verify-otp?email=${email}`;
 
     const mailOptions = {
       from: `<${process.env.EMAIL_USER}>`,
@@ -30,7 +32,16 @@ export const sendOtpToEmail = async (email: string, otp: string) => {
             </span>
           </div>
           <p style="font-size: 14px; color: #777;">
-            This OTP will expire in <strong>5 minutes</strong>. Please do not share this code with anyone.
+            This OTP will expire in <strong>5 minutes</strong>. You can also click the link below to verify your OTP:
+          </p>
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="${verificationUrl}" style="font-size: 16px; background-color: #007BFF; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px;">
+              Verify OTP
+            </a>
+          </div>
+              <p style="font-size: 14px; color: #444; text-align: center; margin-top: 15px;">
+            Alternatively, you can copy and paste this link in your browser: 
+            <a href="${verificationUrl}" style="color: #007BFF;">${verificationUrl}</a>
           </p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
           <p style="font-size: 12px; color: #aaa; text-align: center;">

@@ -10,7 +10,6 @@ import config from "../../config";
 import { IUser } from "../users/user/users.interface";
 import { userModel } from "../users/user/users.model";
 import { authService } from "./auth.service";
-import { USER_STATUS } from "../users/user/users.constant";
 import { OwnerModel } from "../users/owner/owner.model";
 import { RESTAURANT_STATUS } from "../restuarant/restuarant.constant";
 
@@ -27,6 +26,22 @@ const restuarantRegisterRequest = catchAsync(
     });
   }
 );
+
+const otpValidation = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userEmail = req.query.email as string;
+    const validation = await authService.otpValidationIntoDB(
+      req.body, userEmail
+    );
+    sendResponse(res, {
+      statusCode: status.CREATED,
+      success: true,
+      message: "Restaurant registration request submitted successfully",
+      data: validation,
+    });
+  }
+);
+
 
 const Login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -186,7 +201,7 @@ const Logout = catchAsync(
 // 7. Get user profile
 const getUserProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user.userId; // Assuming you have middleware to set req.user
+    const userId = req.userId; // Assuming you have middleware to set req.user
 
     const user: IUser | null = await userModel
       .findById(userId)
@@ -207,7 +222,7 @@ const getUserProfile = catchAsync(
 // 8. Update user profile
 const updateUserProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user.userId; // Assuming you have middleware to set req.user
+    const userId = req.userId; // Assuming you have middleware to set req.user
 
     const updatedUser: IUser | null = await userModel.findByIdAndUpdate(
       userId,
@@ -230,7 +245,7 @@ const updateUserProfile = catchAsync(
 // 9. Delete user profile
 const deleteUserProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user.userId; // Assuming you have middleware to set req.user
+    const userId = req.userId; // Assuming you have middleware to set req.user
 
     const deletedUser: IUser | null = await userModel.findByIdAndDelete(userId);
 
@@ -249,7 +264,7 @@ const deleteUserProfile = catchAsync(
 // 10. Change password
 const changePassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user.userId; // Assuming you have middleware to set req.user
+    const userId = req.userId; // Assuming you have middleware to set req.user
 
     const { oldPassword, newPassword } = req.body;
 
@@ -295,7 +310,7 @@ const resetPassword = catchAsync(
     }
 
     // Update password
-    user.user.password = newPassword;
+    user.password = newPassword;
     await userModel.updateOne({ _id: user._id }, { password: newPassword });
 
     sendResponse(res, {
@@ -441,6 +456,7 @@ const verifyEmailOTP = catchAsync(
 
 export const authController = {
   restuarantRegisterRequest,
+  otpValidation,
   Login,
   OAuthCallback,
   Logout,

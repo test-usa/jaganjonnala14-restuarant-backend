@@ -7,7 +7,7 @@ const RestaurantSchema = new Schema<IRestaurant>(
     restaurantName: { type: String, required: true },
     status: {
       type: String,
-      default: "pending"
+      default: "pending",
     },
     restaurantAddress: { type: String, required: true },
     phone: { type: String, required: true },

@@ -22,12 +22,18 @@ const UserSchema = new Schema<IUser>(
     provider: { type: String },
     phone: { type: String },
     password: { type: String },
+    isVerified: {
+      type: Boolean,
+   
+    },
     image: { type: String, nullable: true },
     otp: {
       type: String,
+      nullable: true
     },
     otpExpiresAt: {
       type: Date,
+      nullable: true
     },
     role: {
       type: String,

@@ -12,6 +12,7 @@ router.post(
   validateRequest(restaurantValidationRequest),
   authController.restuarantRegisterRequest
 );
+router.post("/verify-otp", authController.otpValidation)
 
 // Google OAuth
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));

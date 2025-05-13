@@ -13,8 +13,4 @@ export const ROLE = {
   MAINTENANCE: "maintenance",
 } as const;
 
-export const USER_STATUS = {
-  ACTIVE: "active",
-  INACTIVE: "inactive",
-  PENDING: "pending",
-} as const;
+

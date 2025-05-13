@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { userModel } from "../users/user/users.model";
 import { IRestaurantValidationRequest } from "./auth.validation";
-import { ROLE, USER_STATUS } from "../users/user/users.constant";
+import { ROLE } from "../users/user/users.constant";
 import bcrypt from "bcryptjs";
 import { RestaurantModel } from "../restuarant/restuarant.model";
 import { OwnerModel } from "../users/owner/owner.model";
@@ -34,6 +34,7 @@ export const authService = {
             email: data.businessEmail,
             phone: data.phone,
             otp,
+            isVerified: false,
             otpExpiresAt: new Date(Date.now() + 5 * 60000),
             role: ROLE.RESTAURANT_OWNER,
             password: hashedPassword,
@@ -49,7 +50,7 @@ export const authService = {
             restaurantName: data.restaurantName,
             restaurantAddress: data.restaurantAddress,
             phone: data.phone,
-            status: RESTAURANT_STATUS.UNVERIFIED,
+          
           },
         ],
         { session }
@@ -64,6 +65,8 @@ export const authService = {
             businessName: data.businessName,
             businessEmail: data.businessEmail,
             referralCode: data.referralCode,
+             
+
           },
         ],
         { session }
@@ -76,7 +79,7 @@ export const authService = {
         { session }
       );
 
-      // send OTP via SMS/email
+      //5. send OTP via SMS/email
       await sendOtpToEmail(data.businessEmail, otp);
       // await sendOtpToPhone(data.phone, otp);
 
@@ -100,4 +103,50 @@ export const authService = {
       }
     }
   },
+  async otpValidationIntoDB(data: any, userEmail: string) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      const findUnverifiedUser = await userModel
+        .findOne({ email: userEmail })
+        .session(session);
+  
+      if (!findUnverifiedUser) {
+        throw new Error("No account found with this email. Please register first.");
+      }
+  
+      if (Date.now() > findUnverifiedUser.otpExpiresAt.getTime()) {
+        throw new Error("Your OTP has expired. Please request a new one.");
+      }
+  
+      if (data.otp !== findUnverifiedUser.otp) {
+        throw new Error("The OTP you entered is incorrect. Please try again.");
+      }
+  
+      await userModel.updateOne(
+        { email: userEmail },
+        { $set: { otp: null, otpExpiresAt: null, isVerified: true } },
+        { session }
+      );
+  
+      await session.commitTransaction();
+      session.endSession();
+  
+      return {
+        message: "🎉 Your account has been successfully verified. You can now log in.",
+        userId: findUnverifiedUser._id,
+      };
+  
+    } catch (error: unknown) {
+      await session.abortTransaction();
+      session.endSession();
+  
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("Something went wrong while verifying your account.");
+      }
+    }
+  }
+  
 };
