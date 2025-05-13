@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 
-export interface Icategory {
-    restaurantId: string;
-     categoryName: string;
-     description: string;
-     image: string;
-
+export interface ICategory {
+  restaurant: Types.ObjectId;
+  categoryName: string;
+  description: string;
+  image: string;
+  isDeleted: boolean;
 }

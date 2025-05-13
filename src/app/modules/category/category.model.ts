@@ -1,10 +1,18 @@
-import mongoose from "mongoose";
-    
-    const categorySchema = new mongoose.Schema({
-    
-     isDelete: {
-            type: Boolean,
-            default: false,
-        }}, { timestamps: true });
-    
-    export const categoryModel = mongoose.model("category", categorySchema);
+import { Schema, model, Document, Types } from "mongoose";
+import { ICategory } from "./category.interface";
+
+
+const CategorySchema = new Schema<ICategory>(
+  {
+    restaurant: { type: Schema.Types.ObjectId, ref: "Restaurant", required: true },
+    categoryName: { type: String, required: true },
+    description: { type: String, default: "" },
+    image: { type: String, default: "" },
+    isDeleted: { type: Boolean, default: false },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export const CategoryModel = model<ICategory>("Category", CategorySchema);

@@ -1,27 +1,26 @@
-import mongoose from "mongoose";
-import { IRestuarant } from "./restuarant.interface";
+import mongoose, { Schema, model, Document, Types } from "mongoose";
+import { IRestaurant } from "./restuarant.interface";
 
-const restuarantSchema = new mongoose.Schema<IRestuarant>(
+
+const RestaurantSchema = new Schema<IRestaurant>(
   {
+    owner: { type: Schema.Types.ObjectId, ref: "Owner", required: true },
     name: { type: String, required: true },
-    businessName: { type: String, required: true },
-    businessEmail: { type: String, required: true },
-    phone: { type: String, required: true },
-    gstRate: { type: String, required: true },
-    cgstRate: { type: String, required: true },
-    sgstRate: { type: String, required: true },
     address: { type: String, required: true },
-    logo: { type: String, default: null }, // nullable/optional
+    phone: { type: String, required: true },
+    logo: { type: String, default: null },
     tagline: { type: String, required: true },
-    coverPhoto: [{ type: String }], // Array of image URLs
+    coverPhoto: { type: String, required: true },
+    images: [{ type: String }],
     description: { type: String, required: true },
-    referralCode: { type: String, required: true },
-    isDelete: {
-      type: Boolean,
-      default: false,
-    },
+    isDeleted: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-export const restuarantModel = mongoose.model<IRestuarant>("restuarant", restuarantSchema);
+export const RestaurantModel = model<IRestaurant>(
+  "Restaurant",
+  RestaurantSchema
+);

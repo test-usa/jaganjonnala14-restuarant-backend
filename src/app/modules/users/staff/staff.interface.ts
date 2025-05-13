@@ -1,8 +1,9 @@
 import { Types } from "mongoose";
 
-export type Istaff = {
+export type IStaff = {
   user: Types.ObjectId;
-  restautant: Types.ObjectId;
+  restaurant: Types.ObjectId;
   workDay: string;
   workTime: string;
+  isDeleted: boolean;
 };

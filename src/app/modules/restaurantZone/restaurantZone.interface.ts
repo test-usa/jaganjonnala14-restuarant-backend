@@ -1,8 +1,9 @@
-import mongoose, { Types } from "mongoose";
+import { Types } from "mongoose";
 
 export interface IRestaurantZone {
-  Table: Types.ObjectId;
+  table: Types.ObjectId;
   restaurant: Types.ObjectId;
-  ZoneName: string;
-  ZoneType: string;
+  zoneName: string;
+  zoneType: string;
+  isDeleted: boolean;
 }

@@ -1,18 +1,15 @@
-export interface IRestuarant {
-    name: { type: String },
-    businessName: { type: String },
-    businessEmail: { type: String },
-    phone: { type: String },
-    gstRate: { type: String },
-    cgstRate: { type: String },
-    sgstRate: { type: String },
-    address: { type: String },
-    logo: { type: String, nullable: true },
-    tagline: { type: String },
-    coverPhoto: [{ type: String }],
-    description: { type: String },
-    referralCode: { type: String },
-    isDelete?: {
-        type: boolean;
-    }
-  }
+import { Types } from "mongoose";
+
+export interface IRestaurant {
+  owner: Types.ObjectId;
+  name: string;
+  address: string;
+  phone: string;
+
+  logo?: string; // Optional (nullable)
+  tagline: string;
+  coverPhoto: string;
+  images: string[];
+  description: string;
+  isDeleted?: boolean;
+}
