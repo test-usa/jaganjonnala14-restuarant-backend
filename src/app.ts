@@ -8,7 +8,6 @@ import router from "./app/routes";
 import bcrypt from "bcryptjs";
 import path from "path";
 import fs from "fs";
-import passport from "passport";
 import "../src/app/utils/passport.ts";
 import { userModel } from "./app/modules/users/user/users.model";
 const app: Application = express();

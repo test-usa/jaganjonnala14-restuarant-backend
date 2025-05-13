@@ -17,6 +17,11 @@ import { z } from 'zod';
       password: z.string().min(6),
        
     });
+
+
+
+
+    export type IRestaurantValidationRequest =z.infer<typeof restaurantValidationRequest>
     
     
     

@@ -1,18 +1,17 @@
 import mongoose, { Schema, model, Document, Types } from "mongoose";
 import { IRestaurant } from "./restuarant.interface";
 
-
 const RestaurantSchema = new Schema<IRestaurant>(
   {
-    owner: { type: Schema.Types.ObjectId, ref: "Owner", required: true },
-    name: { type: String, required: true },
-    address: { type: String, required: true },
+    owner: { type: Schema.Types.ObjectId, ref: "Owner", required: false },
+    restaurantName: { type: String, required: true },
+    restaurantAddress: { type: String, required: true },
     phone: { type: String, required: true },
     logo: { type: String, default: null },
-    tagline: { type: String, required: true },
-    coverPhoto: { type: String, required: true },
+    tagline: { type: String },
+    coverPhoto: { type: String },
     images: [{ type: String }],
-    description: { type: String, required: true },
+    description: { type: String },
     isDeleted: { type: Boolean, default: false },
   },
   {
