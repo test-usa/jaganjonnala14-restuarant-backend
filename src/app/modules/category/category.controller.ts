@@ -3,11 +3,24 @@ import { Request, Response } from "express";
     import catchAsync from "../../utils/catchAsync";
     import sendResponse from "../../utils/sendResponse";
     import status from "http-status";
+    import { Express } from 'express';
+import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
+import { ICategory } from "./category.interface";
     
-    const postCategory = catchAsync(async (req: Request, res: Response) => {
-      const result = await categoryService.postCategoryIntoDB(req.body);
-      sendResponse(res, { statusCode: status.CREATED, success: true, message: "Created successfully", data: result });
-    });
+   const postCategory = catchAsync(async (req: Request, res: Response) => {
+  const file = req.file;
+  const data = req.body.data;
+
+  const result = await categoryService.postCategoryIntoDB(data as ICategory, file as Express.Multer.File);
+  
+  sendResponse(res, {
+    statusCode: status.CREATED,
+    success: true,
+    message: "Created successfully",
+    data: result,
+  });
+});
+
     
     const getAllCategory = catchAsync(async (req: Request, res: Response) => {
       const result = await categoryService.getAllCategoryFromDB(req.query);
@@ -20,13 +33,22 @@ import { Request, Response } from "express";
     });
     
     const updateCategory = catchAsync(async (req: Request, res: Response) => {
-      const result = await categoryService.updateCategoryIntoDB(req.body);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Updated successfully", data: result });
-    });
+   
+      const updateData = req.body;
+      const id = req.params.id
     
+      const result = await categoryService.updateCategoryIntoDB(id, updateData);
+    
+      sendResponse(res, {
+        statusCode: status.OK,
+        success: true,
+        message: "Category updated successfully",
+        data: result,
+      });
+    });
     const deleteCategory = catchAsync(async (req: Request, res: Response) => {
-      await categoryService.deleteCategoryFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Deleted successfully",data: null });
+     const data = await categoryService.deleteCategoryFromDB(req.params.id);
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Deleted successfully",data: data });
     });
 
     

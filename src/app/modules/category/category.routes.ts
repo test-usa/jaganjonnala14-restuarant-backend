@@ -1,15 +1,21 @@
 
-    import express from "express";
+    import express, { NextFunction, Request, Response } from "express";
     import { validateRequest } from "../../middlewares/validateRequest";
     import { categoryController } from "./category.controller";
-    import { categoryPostValidation,categoryUpdateValidation } from "./category.validation";
+    import { categoryPostValidation} from "./category.validation";
+import { upload } from "../../utils/sendImageToCloudinary";
 
     const router = express.Router();
+
     
-    router.post("/post_category", validateRequest(categoryPostValidation), categoryController.postCategory);
-    router.get("/get_all_category", categoryController.getAllCategory);
-    router.get("/get_single_category/:id", categoryController.getSingleCategory);
-    router.put("/update_category/:id", validateRequest(categoryUpdateValidation), categoryController.updateCategory);
-    router.delete("/delete_category/:id", categoryController.deleteCategory);
+    
+    router.post("/create-category",upload.single('image'),
+    (req: Request, res: Response, next: NextFunction) => {
+      next();
+    }, categoryController.postCategory);
+    router.get("/all-category", categoryController.getAllCategory);
+    router.get("/single-category/:id", categoryController.getSingleCategory);
+    router.put("/update-category/:id", categoryController.updateCategory);
+    router.delete("/delete-category/:id", categoryController.deleteCategory);
     
     export const categoryRoutes = router;
