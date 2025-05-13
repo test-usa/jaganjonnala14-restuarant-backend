@@ -12,4 +12,8 @@ export default {
 
   JWT_REFRESH_TOKEN_SECRET: process.env.JWT_REFRESH_TOKEN_SECRET,
   JWT_REFRESH_TOKEN_EXPIRES_IN: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
+  CLOUD_NAME: process.env.CLOUD_NAME,
+  API_KEY:process.env.API_KEY,
+  API_SECRATE:process.env.API_SECRATE
+
 };

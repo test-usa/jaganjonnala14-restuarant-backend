@@ -1,78 +1,74 @@
-import { categoryModel } from "./category.model";
-      import { CATEGORY_SEARCHABLE_FIELDS } from "./category.constant";
-    import QueryBuilder from "../../builder/QueryBuilder";
+
     import status from "http-status";
     import AppError from "../../errors/AppError";
+import { CategoryModel } from "./category.model";
+import { ICategory } from "./category.interface";
+import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
     
-
-
-
-
     export const categoryService = {
-      async postCategoryIntoDB(data: any) {
+
+      async postCategoryIntoDB(data: ICategory , file: Express.Multer.File & { path?: string }) {
       try {
-        return await categoryModel.create(data);
+          const categorydata = JSON.parse(data)
+         
+        if (file) {
+          const imageName = `${Math.floor(100 + Math.random() * 900)}`;
+          const path = file.path;
+          const { secure_url } = (await sendImageToCloudinary(imageName, path)) as {
+            secure_url: string;
+          };
+    
+          categorydata.image = secure_url as string;
+        } else {
+          categorydata.image = 'no image';
+        }
+      
+        console.log(categorydata);
+        
+        return await CategoryModel.create(categorydata);
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
           } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
+            throw new  AppError(400,"Category Can not be created");
           }
         }
       },
       async getAllCategoryFromDB(query: any) {
       try {
     
-    
-      const service_query = new QueryBuilder(categoryModel.find(), query)
-            .search(CATEGORY_SEARCHABLE_FIELDS)
-            .filter()
-            .sort()
-            .paginate()
-            .fields();
-      
-          const result = await service_query.modelQuery;
-          const meta = await service_query.countTotal();
-          return {
-            result,
-            meta,
-          };
-    
+          const result= await CategoryModel.find({});
+       return result;
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
           } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
+            throw new Error("Categories can not found");
           }
         }
       },
       async getSingleCategoryFromDB(id: string) {
         try {
-        return await categoryModel.findById(id);
+        return await CategoryModel.findById(id);
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
           } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
+            throw new Error("Category can not retrieved");
           }
         }
       },
-      async updateCategoryIntoDB(data: any) {
+      async updateCategoryIntoDB(id:string,data:ICategory) {
       try {
-    
-    
-    
-      const isDeleted = await categoryModel.findOne({ _id: data.id });
-        if (isDeleted?.isDelete) {
-          throw new AppError(status.NOT_FOUND, "category is already deleted");
-        }
-    
-        const result = await categoryModel.updateOne({ _id: data.id }, data, {
+      const isDeleted = await CategoryModel.findOne({ _id: id });
+       
+       if(!isDeleted){
+         throw new AppError(404,"category not found")
+       }
+        const result = await CategoryModel.findByIdAndUpdate({ _id: id }, data, {
           new: true,
         });
-        if (!result) {
-          throw new Error("category not found.");
-        }
+      
         return result;
     
     
@@ -80,30 +76,28 @@ import { categoryModel } from "./category.model";
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
           } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
+            throw new Error("Category can not be updated");
           }
         }
       },
       async deleteCategoryFromDB(id: string) {
         try {
     
-    
-     // Step 1: Check if the category exists in the database
-        const isExist = await categoryModel.findOne({ _id: id });
+  
+        const isExist = await CategoryModel.findOne({ _id: id });
     
         if (!isExist) {
           throw new AppError(status.NOT_FOUND, "category not found");
         }
     
-        // Step 4: Delete the home category from the database
-        await categoryModel.updateOne({ _id: id }, { isDelete: true });
-        return;
+      const data =   await CategoryModel.findByIdAndDelete({ _id: id }, { isDelete: true });
+        return data;
     
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
           } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
+            throw new Error("Category cannot be deleted");
           }
         }
       },
