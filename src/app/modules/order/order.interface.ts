@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 
-export interface Iorder {
-    orderId: string;
-    status: "pending" | "inProgress" | "delivered" | "cancel";
-    customerName: string;
-    customerPhone: string;
-    orderType: "dine in" | "takeaway";
-    restaurantTable: mongoose.Types.ObjectId;
-    menus: mongoose.Types.ObjectId[];
-    specialRequest: string;
-
-
+export interface IOrder {
+  restaurant: Types.ObjectId;
+  table: Types.ObjectId;
+  menus: Types.ObjectId[]; // Array of Menu IDs
+  customerName: string;
+  customerPhone: string;
+  orderType: "dine in" | "takeaway";
+  status: "pending" | "inProgress" | "delivered" | "cancel";
+  specialRequest: string;
+  total: number;
+  isDeleted: boolean;
 }

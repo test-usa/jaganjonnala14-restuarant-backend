@@ -1,1 +1,0 @@
-export const USERS_SEARCHABLE_FIELDS = [];

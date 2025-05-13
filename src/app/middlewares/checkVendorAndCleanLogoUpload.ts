@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { usersModel } from "../modules/users/users.model";
+import { usersModel } from "../modules/users/user/users.model";
 import { vendorsModel } from "../modules/vendors/vendors.model";
 import path from "path";
 import fs from "fs";

@@ -1,10 +1,24 @@
-import mongoose from "mongoose";
-    
-    const restaurantLayoutSchema = new mongoose.Schema({
-    
-     isDelete: {
-            type: Boolean,
-            default: false,
-        }}, { timestamps: true });
-    
-    export const restaurantLayoutModel = mongoose.model("restaurantLayout", restaurantLayoutSchema);
+import { Schema, model, Document, Types } from "mongoose";
+import { IRestaurantLayout } from "./restaurantLayout.interface";
+
+const RestaurantLayoutSchema = new Schema<IRestaurantLayout>(
+  {
+    floor: { type: Schema.Types.ObjectId, ref: "Floor", required: true },
+    restaurant: {
+      type: Schema.Types.ObjectId,
+      ref: "Restaurant",
+      required: true,
+    },
+    numberOfTables: { type: Number, required: true },
+    capacity: { type: Number, required: true },
+    isDeleted: { type: Boolean, default: false },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export const RestaurantLayoutModel = model<IRestaurantLayout>(
+  "RestaurantLayout",
+  RestaurantLayoutSchema
+);

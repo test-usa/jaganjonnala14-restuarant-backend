@@ -1,0 +1,1 @@
+export const OWNER_SEARCHABLE_FIELDS = [];
