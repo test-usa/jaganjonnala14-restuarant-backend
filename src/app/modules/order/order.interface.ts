@@ -1,11 +1,11 @@
-import mongoose, { Types } from "mongoose";
+import { Types } from "mongoose";
 
 export interface IOrder {
-  Restaurant: Types.ObjectId;
+  restaurant: Types.ObjectId;
   table: Types.ObjectId;
-  menus: [Types.ObjectId];
-  CustomerName: string;
-  CustomerPhone: string;
+  menus: Types.ObjectId[]; // Array of Menu IDs
+  customerName: string;
+  customerPhone: string;
   orderType: "dine in" | "takeaway";
   status: "pending" | "inProgress" | "delivered" | "cancel";
   specialRequest: string;
