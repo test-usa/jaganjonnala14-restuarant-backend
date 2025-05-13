@@ -11,13 +11,15 @@ export type IUserRole =
   | "maintenance";
 
 export type IUser = {
+  _id: string;
   name: string;
+  otp: string;
+  otpExpiresAt: Date;
   providerId?: string;
   provider?: string;
   email: string;
   phone: string;
   role: IUserRole;
-  status: "active" | "inactive" | "pending";
   image: string;
   password: string;
   isDeleted: boolean;

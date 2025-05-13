@@ -10,10 +10,15 @@ import config from "../../config";
 import { IUser } from "../users/user/users.interface";
 import { userModel } from "../users/user/users.model";
 import { authService } from "./auth.service";
+import { USER_STATUS } from "../users/user/users.constant";
+import { OwnerModel } from "../users/owner/owner.model";
+import { RESTAURANT_STATUS } from "../restuarant/restuarant.constant";
 
 const restuarantRegisterRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const pendingRestuarant = await authService.restuarantRegisterRequestIntoDB(req.body)
+    const pendingRestuarant = await authService.restuarantRegisterRequestIntoDB(
+      req.body
+    );
     sendResponse(res, {
       statusCode: status.CREATED,
       success: true,
@@ -29,22 +34,38 @@ const Login = catchAsync(
 
     // 1. Check if user exists
     const user: IUser | null = await userModel
-      .findOne({ "user.email": email })
-      .select("+user.password");
+      .findOne({ email: email })
+      .select("+password");
 
     if (!user) {
       throw new AppError(status.CONFLICT, "User not exists! Please register");
     }
 
+    const isRestaurantExistForThisUser: any = await OwnerModel.findOne({
+      user: user._id,
+    }).populate({
+      path: "restaurant", // field in OwnerModel schema
+      model: "Restaurant", // name of the Mongoose model
+    });
+
+    if (
+      isRestaurantExistForThisUser &&
+      isRestaurantExistForThisUser.restaurant.status != RESTAURANT_STATUS.ACTIVE
+    ) {
+      throw new Error(
+        "You are not allowed to log in because your account is not yet active. Please wait for admin approval."
+      );
+    }
+
     // 2. Compare password using bcrypt directly
-    const isMatch = await bcrypt.compare(password, user?.user?.password);
+    const isMatch = await bcrypt.compare(password, user?.password);
     if (!isMatch) {
       throw new AppError(status.UNAUTHORIZED, "Password is incorrect");
     }
 
     const payload = {
       userId: user._id,
-      role: user.user.role,
+      role: user.role,
     };
 
     //  Generate access token:
@@ -79,9 +100,9 @@ const Login = catchAsync(
       data: {
         accessToken,
         user: {
-          name: user.user.name,
-          email: user.user.email,
-          role: user.user.role,
+          name: user.name,
+          email: user.email,
+          role: user.role,
         },
       },
     });

@@ -23,6 +23,12 @@ const UserSchema = new Schema<IUser>(
     phone: { type: String },
     password: { type: String },
     image: { type: String, nullable: true },
+    otp: {
+      type: String,
+    },
+    otpExpiresAt: {
+      type: Date,
+    },
     role: {
       type: String,
       enum: RoleEnum,
