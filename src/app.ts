@@ -49,7 +49,7 @@ app.use(globalErrorHandler);
 export const createAdmin = async () => {
   try {
     const existingAdmin = await userModel.findOne({
-      "user.role": "admin",
+      role: "admin",
     });
 
     if (existingAdmin) {

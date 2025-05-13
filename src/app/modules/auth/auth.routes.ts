@@ -1,7 +1,7 @@
 import express from "express";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { authController } from "./auth.controller";
-import { authLoginValidation, authRegisterValidation } from "./auth.validation";
+import { authLoginValidation, restaurantValidationRequest,  } from "./auth.validation";
 import hashPassword from "../../middlewares/hashPassword";
 import passport from 'passport';
 
@@ -9,8 +9,8 @@ import passport from 'passport';
 const router = express.Router();
 
 router.post(
-  "/register",
-  validateRequest(authRegisterValidation),
+  "/restuarant-register-request",
+  validateRequest(restaurantValidationRequest),
   hashPassword,
   authController.Register
 );
