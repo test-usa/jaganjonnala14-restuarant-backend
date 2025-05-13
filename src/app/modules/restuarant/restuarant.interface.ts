@@ -5,7 +5,7 @@ export interface IRestaurant {
   restaurantName: string;
   restaurantAddress: string;
   phone: string;
-
+  status: "active" | "pending" | "cancelled";
   logo?: string; // Optional (nullable)
   tagline: string;
   coverPhoto: string;

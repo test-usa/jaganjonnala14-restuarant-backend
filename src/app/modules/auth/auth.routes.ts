@@ -2,18 +2,17 @@ import express from "express";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { authController } from "./auth.controller";
 import { authLoginValidation, restaurantValidationRequest,  } from "./auth.validation";
-import hashPassword from "../../middlewares/hashPassword";
 import passport from 'passport';
 
 
 const router = express.Router();
 
 router.post(
-  "/restuarant-register-request",
+  "/register-restuarant-owner",
   validateRequest(restaurantValidationRequest),
-  hashPassword,
-  authController.Register
+  authController.restuarantRegisterRequest
 );
+router.post("/verify-otp", authController.otpValidation)
 
 // Google OAuth
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));

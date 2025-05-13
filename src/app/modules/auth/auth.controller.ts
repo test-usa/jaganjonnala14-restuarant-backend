@@ -2,56 +2,85 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
-import { usersModel } from "../users/user/users.model";
-import { Iusers } from "../users/user/users.interface";
+
 import AppError from "../../errors/AppError";
 import generateToken from "../../utils/generateToken";
 import bcrypt from "bcryptjs";
 import config from "../../config";
+import { IUser } from "../users/user/users.interface";
+import { userModel } from "../users/user/users.model";
+import { authService } from "./auth.service";
+import { OwnerModel } from "../users/owner/owner.model";
+import { RESTAURANT_STATUS } from "../restuarant/restuarant.constant";
 
-const Register = catchAsync(
+const restuarantRegisterRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    // check if user already exists:
-    const user: Iusers | null = await usersModel.findOne({
-      email: req.body.email,
-    });
-    if (user) {
-      throw new AppError(status.CONFLICT, "User already exists");
-    }
-
-    // create user:
-    const newUser = await usersModel.create(req.body);
+    const pendingRestuarant = await authService.restuarantRegisterRequestIntoDB(
+      req.body
+    );
     sendResponse(res, {
       statusCode: status.CREATED,
       success: true,
-      message: "Register successfully",
-      data: newUser,
+      message: "An OTP has been sent to your email and phone for verification.",
+      data: pendingRestuarant,
     });
   }
 );
+
+const otpValidation = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userEmail = req.query.email as string;
+    await authService.otpValidationIntoDB(
+      req.body, userEmail
+    );
+    sendResponse(res, {
+      statusCode: status.CREATED,
+      success: true,
+      message: "OTP verified. Your account is now pending admin approval.",
+      data: null,
+    });
+  }
+);
+
 
 const Login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
     // 1. Check if user exists
-    const user: Iusers | null = await usersModel
-      .findOne({ "user.email": email })
-      .select("+user.password");
+    const user: IUser | null = await userModel
+      .findOne({ email: email })
+      .select("+password");
 
     if (!user) {
       throw new AppError(status.CONFLICT, "User not exists! Please register");
     }
 
+    const isRestaurantExistForThisUser: any = await OwnerModel.findOne({
+      user: user._id,
+    }).populate({
+      path: "restaurant", // field in OwnerModel schema
+      model: "Restaurant", // name of the Mongoose model
+    });
+
+    if (
+      isRestaurantExistForThisUser &&
+      isRestaurantExistForThisUser.restaurant.status != RESTAURANT_STATUS.ACTIVE
+    ) {
+      throw new Error(
+        "You are not allowed to log in because your account is not yet active. Please wait for admin approval."
+      );
+    }
+
     // 2. Compare password using bcrypt directly
-    const isMatch = await bcrypt.compare(password, user?.user?.password);
+    const isMatch = await bcrypt.compare(password, user?.password);
     if (!isMatch) {
       throw new AppError(status.UNAUTHORIZED, "Password is incorrect");
     }
 
     const payload = {
       userId: user._id,
-      role: user.user.role,
+      role: user.role,
     };
 
     //  Generate access token:
@@ -86,9 +115,9 @@ const Login = catchAsync(
       data: {
         accessToken,
         user: {
-          name: user.user.name,
-          email: user.user.email,
-          role: user.user.role,
+          name: user.name,
+          email: user.email,
+          role: user.role,
         },
       },
     });
@@ -172,9 +201,9 @@ const Logout = catchAsync(
 // 7. Get user profile
 const getUserProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user.userId; // Assuming you have middleware to set req.user
+    const userId = req.userId; // Assuming you have middleware to set req.user
 
-    const user: Iusers | null = await usersModel
+    const user: IUser | null = await userModel
       .findById(userId)
       .select("-password");
 
@@ -193,9 +222,9 @@ const getUserProfile = catchAsync(
 // 8. Update user profile
 const updateUserProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user.userId; // Assuming you have middleware to set req.user
+    const userId = req.userId; // Assuming you have middleware to set req.user
 
-    const updatedUser: Iusers | null = await usersModel.findByIdAndUpdate(
+    const updatedUser: IUser | null = await userModel.findByIdAndUpdate(
       userId,
       req.body,
       { new: true }
@@ -216,11 +245,9 @@ const updateUserProfile = catchAsync(
 // 9. Delete user profile
 const deleteUserProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user.userId; // Assuming you have middleware to set req.user
+    const userId = req.userId; // Assuming you have middleware to set req.user
 
-    const deletedUser: Iusers | null = await usersModel.findByIdAndDelete(
-      userId
-    );
+    const deletedUser: IUser | null = await userModel.findByIdAndDelete(userId);
 
     if (!deletedUser) {
       throw new AppError(status.NOT_FOUND, "User not found");
@@ -237,12 +264,12 @@ const deleteUserProfile = catchAsync(
 // 10. Change password
 const changePassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user.userId; // Assuming you have middleware to set req.user
+    const userId = req.userId; // Assuming you have middleware to set req.user
 
     const { oldPassword, newPassword } = req.body;
 
     // Check if user exists
-    const user: Iusers | null = await usersModel
+    const user: IUser | null = await userModel
       .findById(userId)
       .select("+password");
 
@@ -258,7 +285,7 @@ const changePassword = catchAsync(
 
     // Update password
     user.user.password = newPassword;
-    await usersModel.updateOne({ _id: user._id }, { password: newPassword });
+    await userModel.updateOne({ _id: user._id }, { password: newPassword });
 
     sendResponse(res, {
       statusCode: status.OK,
@@ -274,7 +301,7 @@ const resetPassword = catchAsync(
     const { email, newPassword } = req.body;
 
     // Check if user exists
-    const user: Iusers | null = await usersModel
+    const user: IUser | null = await userModel
       .findOne({ email })
       .select("+password");
 
@@ -283,8 +310,8 @@ const resetPassword = catchAsync(
     }
 
     // Update password
-    user.user.password = newPassword;
-    await usersModel.updateOne({ _id: user._id }, { password: newPassword });
+    user.password = newPassword;
+    await userModel.updateOne({ _id: user._id }, { password: newPassword });
 
     sendResponse(res, {
       statusCode: status.OK,
@@ -300,7 +327,7 @@ const verifyEmail = catchAsync(
     const { email } = req.body;
 
     // Check if user exists
-    const user: Iusers | null = await usersModel.findOne({ email });
+    const user: IUser | null = await userModel.findOne({ email });
 
     if (!user) {
       throw new AppError(status.NOT_FOUND, "User not found");
@@ -322,7 +349,7 @@ const verifyPhoneNumber = catchAsync(
     const { phoneNumber } = req.body;
 
     // Check if user exists
-    const user: Iusers | null = await usersModel.findOne({ phoneNumber });
+    const user: IUser | null = await userModel.findOne({ phoneNumber });
 
     if (!user) {
       throw new AppError(status.NOT_FOUND, "User not found");
@@ -344,7 +371,7 @@ const resendVerificationEmail = catchAsync(
     const { email } = req.body;
 
     // Check if user exists
-    const user: Iusers | null = await usersModel.findOne({ email });
+    const user: IUser | null = await userModel.findOne({ email });
 
     if (!user) {
       throw new AppError(status.NOT_FOUND, "User not found");
@@ -366,7 +393,7 @@ const resendVerificationPhoneNumber = catchAsync(
     const { phoneNumber } = req.body;
 
     // Check if user exists
-    const user: Iusers | null = await usersModel.findOne({ phoneNumber });
+    const user: IUser | null = await userModel.findOne({ phoneNumber });
 
     if (!user) {
       throw new AppError(status.NOT_FOUND, "User not found");
@@ -388,7 +415,7 @@ const verifyPhoneNumberOTP = catchAsync(
     const { phoneNumber, otp } = req.body;
 
     // Check if user exists
-    const user: Iusers | null = await usersModel.findOne({ phoneNumber });
+    const user: IUser | null = await userModel.findOne({ phoneNumber });
 
     if (!user) {
       throw new AppError(status.NOT_FOUND, "User not found");
@@ -410,7 +437,7 @@ const verifyEmailOTP = catchAsync(
     const { email, otp } = req.body;
 
     // Check if user exists
-    const user: Iusers | null = await usersModel.findOne({ email });
+    const user: IUser | null = await userModel.findOne({ email });
 
     if (!user) {
       throw new AppError(status.NOT_FOUND, "User not found");
@@ -428,7 +455,8 @@ const verifyEmailOTP = catchAsync(
 );
 
 export const authController = {
-  Register,
+  restuarantRegisterRequest,
+  otpValidation,
   Login,
   OAuthCallback,
   Logout,
