@@ -1,0 +1,1 @@
+export const RESTUARANT_SEARCHABLE_FIELDS = [];

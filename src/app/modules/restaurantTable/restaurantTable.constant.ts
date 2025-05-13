@@ -1,1 +1,0 @@
-export const RESTAURANTTABLE_SEARCHABLE_FIELDS = [];

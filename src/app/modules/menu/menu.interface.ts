@@ -1,17 +1,16 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
+
+type IMenuSize = "small" | "large" | "medium";
 
 export interface Imenu {
-    itemName: string;
-    category: mongoose.Types.ObjectId;
-    restaurant: mongoose.Types.ObjectId;
-    price: number;
-    size: "small" | "large" | "medium";
-    availability: boolean;
-    image: string;
-    like: number;
-    rating: number;
-    description: string;
-    isDelete: boolean
-
-
+  category: Types.ObjectId;
+  restaurant: Types.ObjectId;
+  itemName: string;
+  price: Number;
+  size: IMenuSize;
+  availability: Boolean;
+  description: string;
+  rating: Number;
+  like: number;
+  isDelete: boolean;
 }

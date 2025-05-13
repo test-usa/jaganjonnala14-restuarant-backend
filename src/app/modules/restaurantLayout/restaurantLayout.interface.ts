@@ -1,9 +1,8 @@
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 
-export interface IrestaurantLayout {
-  zoneName: string;
-  zoneType: mongoose.Types.ObjectId;
-  tableName: mongoose.Types.ObjectId;
-  tableSetting: mongoose.Types.ObjectId;
-  seatingCapacity: number;
+export interface IRestaurantLayout {
+  floor: Types.ObjectId;
+  restaurant: Types.ObjectId;
+  NumberOfTables: Number;
+  capacity: Number;
 }

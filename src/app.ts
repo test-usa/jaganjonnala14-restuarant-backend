@@ -4,19 +4,17 @@ import cors from "cors";
 import notFound from "./app/middlewares/notFound";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import router from "./app/routes";
-import { usersModel } from "./app/modules/users/users.model";
+
 import bcrypt from "bcryptjs";
 import path from "path";
 import fs from "fs";
 import passport from "passport";
-import "../src/app/utils/passport.ts"
+import "../src/app/utils/passport.ts";
+import { userModel } from "./app/modules/users/user/users.model";
 const app: Application = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-
-
 
 app.use(
   cors({
@@ -50,7 +48,7 @@ app.use(globalErrorHandler);
 
 export const createAdmin = async () => {
   try {
-    const existingAdmin = await usersModel.findOne({
+    const existingAdmin = await userModel.findOne({
       "user.role": "admin",
     });
 
@@ -91,26 +89,13 @@ export const createAdmin = async () => {
 
     const hashedPassword = await bcrypt.hash(SUPER_ADMIN_PASSWORD, 10);
 
-    await usersModel.create({
-      user: {
-        name: SUPER_ADMIN_NAME,
-        email: SUPER_ADMIN_EMAIL,
-        fullName: SUPER_ADMIN_FULLNAME,
-        nickName: SUPER_ADMIN_NICKNAME,
-        gender: SUPER_ADMIN_GENDER as "male" | "female",
-        country: SUPER_ADMIN_COUNTRY,
-        language: SUPER_ADMIN_LANGUAGE,
-        timeZone: SUPER_ADMIN_TIMEZONE,
-        phone: SUPER_ADMIN_PHONE,
-        password: hashedPassword,
-        image: null,
-        address: SUPER_ADMIN_ADDRESS,
-        role: "admin",
-      },
-      restaurant: null,
-      staff: null,
-      status: "active",
-      isDelete: false,
+    await userModel.create({
+      name: SUPER_ADMIN_NAME,
+      email: SUPER_ADMIN_EMAIL,
+      phone: SUPER_ADMIN_PHONE,
+      password: hashedPassword,
+      image: null,
+      role: "admin",
     });
 
     console.log("🚀 Super admin created successfully");

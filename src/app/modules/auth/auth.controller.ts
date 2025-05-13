@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
-import { usersModel } from "../users/users.model";
-import { Iusers } from "../users/users.interface";
+import { usersModel } from "../users/user/users.model";
+import { Iusers } from "../users/user/users.interface";
 import AppError from "../../errors/AppError";
 import generateToken from "../../utils/generateToken";
 import bcrypt from "bcryptjs";
@@ -143,7 +143,9 @@ const OAuthCallback = (req: Request, res: Response) => {
     // });
 
     // Or redirect if needed:
-    res.redirect(`${process.env.FRONTEND_URL}/oauth-success?accessToken=${accessToken}`);
+    res.redirect(
+      `${process.env.FRONTEND_URL}/oauth-success?accessToken=${accessToken}`
+    );
   } catch (error) {
     console.error("OAuth Callback Error:", error);
     res.status(500).json({ success: false, message: "OAuth login failed" });

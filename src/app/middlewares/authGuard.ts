@@ -9,7 +9,7 @@ declare global {
   }
 }
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { usersModel } from "../modules/users/users.model";
+import { usersModel } from "../modules/users/user/users.model";
 import AppError from "../errors/AppError";
 import status from "http-status";
 

@@ -3,7 +3,7 @@ import { ADMIN_SEARCHABLE_FIELDS } from "./admin.constant";
 import QueryBuilder from "../../builder/QueryBuilder";
 import status from "http-status";
 import AppError from "../../errors/AppError";
-import { usersModel } from "../users/users.model";
+import { usersModel } from "../users/user/users.model";
 
 export const adminService = {
   async postAdminIntoDB(data: any) {
@@ -132,7 +132,7 @@ export const adminService = {
       }
 
       // Step 3: Create the manager in the database
-      const newManager = await usersModel.create({...data, role: "manager" });
+      const newManager = await usersModel.create({ ...data, role: "manager" });
 
       return newManager;
     } catch (error: unknown) {

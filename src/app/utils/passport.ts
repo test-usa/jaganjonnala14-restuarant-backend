@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import dotenv from "dotenv";
-import { usersModel } from "../modules/users/users.model";
+import { usersModel } from "../modules/users/user/users.model";
 
 dotenv.config();
 
@@ -52,9 +52,8 @@ passport.use(
     },
     async (_accessToken, _refreshToken, profile, done) => {
       try {
-
-console.log("profile", profile);
-return;
+        console.log("profile", profile);
+        return;
 
         const email =
           profile.emails?.[0]?.value || `${profile.id}@facebook.com`;
