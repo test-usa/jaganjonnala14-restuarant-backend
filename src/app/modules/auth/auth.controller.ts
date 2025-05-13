@@ -21,7 +21,7 @@ const restuarantRegisterRequest = catchAsync(
     sendResponse(res, {
       statusCode: status.CREATED,
       success: true,
-      message: "Restaurant registration request submitted successfully",
+      message: "An OTP has been sent to your email and phone for verification.",
       data: pendingRestuarant,
     });
   }
@@ -30,14 +30,14 @@ const restuarantRegisterRequest = catchAsync(
 const otpValidation = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userEmail = req.query.email as string;
-    const validation = await authService.otpValidationIntoDB(
+    await authService.otpValidationIntoDB(
       req.body, userEmail
     );
     sendResponse(res, {
       statusCode: status.CREATED,
       success: true,
-      message: "Restaurant registration request submitted successfully",
-      data: validation,
+      message: "OTP verified. Your account is now pending admin approval.",
+      data: null,
     });
   }
 );
