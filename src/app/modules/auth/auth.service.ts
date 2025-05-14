@@ -66,7 +66,6 @@ export const authService = {
             businessEmail: data.businessEmail,
             referralCode: data.referralCode,
              
-
           },
         ],
         { session }

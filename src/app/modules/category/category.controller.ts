@@ -3,8 +3,6 @@ import { Request, Response } from "express";
     import catchAsync from "../../utils/catchAsync";
     import sendResponse from "../../utils/sendResponse";
     import status from "http-status";
-    import { Express } from 'express';
-import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 import { ICategory } from "./category.interface";
     
    const postCategory = catchAsync(async (req: Request, res: Response) => {
@@ -16,7 +14,7 @@ import { ICategory } from "./category.interface";
   sendResponse(res, {
     statusCode: status.CREATED,
     success: true,
-    message: "Created successfully",
+    message: "Category Created successfully",
     data: result,
   });
 });
@@ -24,12 +22,12 @@ import { ICategory } from "./category.interface";
     
     const getAllCategory = catchAsync(async (req: Request, res: Response) => {
       const result = await categoryService.getAllCategoryFromDB(req.query);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Fetched successfully", data: result });
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Categories Fetched successfully", data: result });
     });
     
     const getSingleCategory = catchAsync(async (req: Request, res: Response) => {
       const result = await categoryService.getSingleCategoryFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Fetched successfully", data: result });
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Single category Fetched successfully", data: result });
     });
     
     const updateCategory = catchAsync(async (req: Request, res: Response) => {
@@ -48,7 +46,7 @@ import { ICategory } from "./category.interface";
     });
     const deleteCategory = catchAsync(async (req: Request, res: Response) => {
      const data = await categoryService.deleteCategoryFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Deleted successfully",data: data });
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Category Deleted successfully",data: data });
     });
 
     

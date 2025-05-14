@@ -10,7 +10,6 @@ const RestaurantLayoutSchema = new Schema<IRestaurantLayout>(
       required: true,
     },
     numberOfTables: { type: Number, required: true },
-    capacity: { type: Number, required: true },
     isDeleted: { type: Boolean, default: false },
   },
   {

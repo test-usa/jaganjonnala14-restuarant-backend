@@ -8,7 +8,7 @@ const OrderSchema = new Schema<IOrder>(
       ref: "Restaurant",
       required: true,
     },
-    table: { type: Schema.Types.ObjectId, ref: "Table", required: true },
+    zone : { type: Schema.Types.ObjectId, ref: "Table", required: false },
     menus: [{ type: Types.ObjectId, ref: "Menu", required: true }],
     customerName: { type: String, required: true },
     customerPhone: { type: String, required: true },
@@ -27,7 +27,8 @@ const OrderSchema = new Schema<IOrder>(
     isDeleted: { type: Boolean, default: false },
   },
   {
-    timestamps: true, // Adds createdAt and updatedAt
+    timestamps: true, 
+    versionKey:false
   }
 );
 

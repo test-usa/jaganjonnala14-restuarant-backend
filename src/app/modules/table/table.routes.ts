@@ -6,10 +6,10 @@
 
     const router = express.Router();
     
-    router.post("/post_table", validateRequest(tablePostValidation), tableController.postTable);
-    router.get("/get_all_table", tableController.getAllTable);
-    router.get("/get_single_table/:id", tableController.getSingleTable);
-    router.put("/update_table/:id", validateRequest(tableUpdateValidation), tableController.updateTable);
-    router.delete("/delete_table/:id", tableController.deleteTable);
+    router.post("/create-table", validateRequest(tablePostValidation), tableController.postTable);
+    router.get("/all-table", tableController.getAllTable);
+    router.get("/single-table/:id", tableController.getSingleTable);
+    router.put("/update-table/:id", validateRequest(tableUpdateValidation), tableController.updateTable);
+    router.delete("/delete-table/:id", tableController.deleteTable);
     
     export const tableRoutes = router;

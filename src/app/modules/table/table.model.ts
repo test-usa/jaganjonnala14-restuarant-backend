@@ -6,12 +6,13 @@ const TableSchema = new Schema<ITable>(
   {
     restaurant: { type: Schema.Types.ObjectId, ref: "Restaurant", required: true },
     tableName: { type: String, required: true },
-    tableSetting: { type: String, required: true }, // e.g., "Indoor", "Outdoor"
+    tableSetting: { type: String, required: true }, 
     seatingCapacity: { type: Number, required: true },
     isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,
+    versionKey:false
   }
 );
 

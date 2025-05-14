@@ -1,15 +1,21 @@
 
     import status from "http-status";
-    import AppError from "../../errors/AppError";
+  import AppError from "../../errors/AppError";
 import { CategoryModel } from "./category.model";
 import { ICategory } from "./category.interface";
 import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
+import { validateData } from "../../middlewares/validateData ";
+import { categoryPostValidation } from "./category.validation";
+import { RestaurantModel } from "../restuarant/restuarant.model";
     
     export const categoryService = {
 
-      async postCategoryIntoDB(data: ICategory , file: Express.Multer.File & { path?: string }) {
+      async postCategoryIntoDB(data :  any , file: Express.Multer.File & { path?: string }) {
       try {
-          const categorydata = JSON.parse(data)
+          const categorydata = JSON.parse(data);
+
+           const validatedData =  await validateData<ICategory>(categoryPostValidation, categorydata);
+       
          
         if (file) {
           const imageName = `${Math.floor(100 + Math.random() * 900)}`;
@@ -18,14 +24,18 @@ import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
             secure_url: string;
           };
     
-          categorydata.image = secure_url as string;
+          validatedData.image = secure_url as string;
         } else {
-          categorydata.image = 'no image';
+          validatedData.image = 'no image';
         }
       
-        console.log(categorydata);
+        const restaurant = await  RestaurantModel.findOne({_id: validatedData.restaurant});
+ 
+        if(!restaurant){
+          throw new AppError(400,"restaurant doesn't found");
+        }
         
-        return await CategoryModel.create(categorydata);
+        return await CategoryModel.create(validatedData);
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
