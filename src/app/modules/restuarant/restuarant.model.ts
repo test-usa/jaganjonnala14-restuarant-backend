@@ -5,6 +5,10 @@ const RestaurantSchema = new Schema<IRestaurant>(
   {
     owner: { type: Schema.Types.ObjectId, ref: "Owner", required: false },
     restaurantName: { type: String, required: true },
+    menus: {
+      type: [{ type: Schema.Types.ObjectId }],
+      default: []
+    },
     status: {
       type: String,
       default: "pending",

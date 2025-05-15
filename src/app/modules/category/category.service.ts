@@ -3,10 +3,11 @@
   import AppError from "../../errors/AppError";
 import { CategoryModel } from "./category.model";
 import { ICategory } from "./category.interface";
-import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
+
 import { validateData } from "../../middlewares/validateData ";
 import { categoryPostValidation } from "./category.validation";
 import { RestaurantModel } from "../restuarant/restuarant.model";
+import { uploadImgToCloudinary } from "../../utils/sendImageToCloudinary";
     
     export const categoryService = {
 
@@ -20,7 +21,7 @@ import { RestaurantModel } from "../restuarant/restuarant.model";
         if (file) {
           const imageName = `${Math.floor(100 + Math.random() * 900)}`;
           const path = file.path;
-          const { secure_url } = (await sendImageToCloudinary(imageName, path)) as {
+          const { secure_url } = (await uploadImgToCloudinary(imageName, path)) as {
             secure_url: string;
           };
     

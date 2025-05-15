@@ -1,110 +1,104 @@
-import { restaurantLayoutModel } from "./restaurantLayout.model";
-      import { RESTAURANTLAYOUT_SEARCHABLE_FIELDS } from "./restaurantLayout.constant";
-    import QueryBuilder from "../../builder/QueryBuilder";
-    import status from "http-status";
-    import AppError from "../../errors/AppError";
-    
+import { RestaurantLayoutModel } from './restaurantLayout.model';
+import { IRestaurantLayout } from './restaurantLayout.interface';
+import AppError from '../../errors/AppError';
+import { RestaurantModel } from '../restuarant/restuarant.model';
+import { FloorModel } from '../floor/floor.model';
+import { OwnerModel } from '../users/owner/owner.model';
+import mongoose from 'mongoose';
+import { toObjectId } from '../../utils/ConvertObjectId';
+
+const postRestaurantLayout = async (payload: IRestaurantLayout) => {
+
+  const isRestaurantExists =  await RestaurantModel.findById({_id: payload.restaurant});
+  if(!isRestaurantExists){
+    throw new AppError(400,"the restaurant is not exist");
+  }
+  const isFloorExists =  await FloorModel.findById({_id: payload.floor});
+  if(!isFloorExists){
+    throw new AppError(400,"the floor is not exist");
+  }
+  const result = await RestaurantLayoutModel.create(payload);
+  return result;
+};
+
+const getAllRestaurantLayout = async () => {
+  const result = await RestaurantLayoutModel.find({ isDeleted: false })
+    .populate('restaurant')
+    .populate('floor');
+
+  return result;
+};
+
+
+const getSingleRestaurantLayout = async (id: string) => {
+  const result = await RestaurantLayoutModel.findById(id);
+  if (!result || result.isDeleted) {
+    throw new AppError(404, 'Restaurant layout not found');
+  }
+  return result;
+};
+
+const updateRestaurantLayout = async (
+  id: string,
+  user: string,
+  payload: Partial<IRestaurantLayout>
+) => {
 
 
 
+  
+  const floor = await FloorModel.findOne({
+    _id: new mongoose.Types.ObjectId(payload.floor),
+    isDeleted: false,
+  });
 
-    export const restaurantLayoutService = {
-      async postRestaurantLayoutIntoDB(data: any) {
-      try {
-        return await restaurantLayoutModel.create(data);
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
-      },
-      async getAllRestaurantLayoutFromDB(query: any) {
-      try {
-    
-    
-      const service_query = new QueryBuilder(restaurantLayoutModel.find(), query)
-            .search(RESTAURANTLAYOUT_SEARCHABLE_FIELDS)
-            .filter()
-            .sort()
-            .paginate()
-            .fields();
-      
-          const result = await service_query.modelQuery;
-          const meta = await service_query.countTotal();
-          return {
-            result,
-            meta,
-          };
-    
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
-      },
-      async getSingleRestaurantLayoutFromDB(id: string) {
-        try {
-        return await restaurantLayoutModel.findById(id);
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
-      },
-      async updateRestaurantLayoutIntoDB(data: any) {
-      try {
-    
-    
-    
-      const isDeleted = await restaurantLayoutModel.findOne({ _id: data.id });
-        if (isDeleted?.isDelete) {
-          throw new AppError(status.NOT_FOUND, "restaurantLayout is already deleted");
-        }
-    
-        const result = await restaurantLayoutModel.updateOne({ _id: data.id }, data, {
-          new: true,
-        });
-        if (!result) {
-          throw new Error("restaurantLayout not found.");
-        }
-        return result;
-    
-    
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
-      },
-      async deleteRestaurantLayoutFromDB(id: string) {
-        try {
-    
-    
-     // Step 1: Check if the restaurantLayout exists in the database
-        const isExist = await restaurantLayoutModel.findOne({ _id: id });
-    
-        if (!isExist) {
-          throw new AppError(status.NOT_FOUND, "restaurantLayout not found");
-        }
-    
-        // Step 4: Delete the home restaurantLayout from the database
-        await restaurantLayoutModel.updateOne({ _id: id }, { isDelete: true });
-        return;
-    
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
-      },
-    };
+  if (!floor) {
+    throw new AppError(403, "No floor found");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid Restaurant Layout ID");
+  }
+  if (!mongoose.Types.ObjectId.isValid(user)) {
+    throw new AppError(400, "Invalid User ID");
+  }
+
+  const restaurantOwner = await OwnerModel.findOne({
+    user: new mongoose.Types.ObjectId(user),
+    isDeleted: false,
+  });
+
+  if (!restaurantOwner) {
+    throw new AppError(403, "No owner found for the given user");
+  }
+
+  const updated = await RestaurantLayoutModel.findByIdAndUpdate(id, payload, {
+    new: true,
+  })
+  if (!updated) {
+    throw new AppError(404, "Restaurant layout not found");
+  }
+
+  return updated;
+};
+
+
+const deleteRestaurantLayout = async (id: string) => {
+  const deleted = await RestaurantLayoutModel.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true }
+  );
+  if (!deleted) {
+    throw new AppError(404, 'Restaurant layout not found');
+  }
+  return deleted;
+};
+
+export const restaurantLayoutService = {
+  postRestaurantLayout,
+  getAllRestaurantLayout,
+  getSingleRestaurantLayout,
+  updateRestaurantLayout,
+  deleteRestaurantLayout,
+};

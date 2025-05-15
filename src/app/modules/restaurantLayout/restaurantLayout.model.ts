@@ -14,6 +14,7 @@ const RestaurantLayoutSchema = new Schema<IRestaurantLayout>(
   },
   {
     timestamps: true,
+    versionKey:false
   }
 );
 
