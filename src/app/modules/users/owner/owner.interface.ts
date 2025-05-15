@@ -6,6 +6,7 @@ export interface IOwner {
   businessName: string;
   businessEmail: string;
   referralCode: string;
+  status: "pending" | "active" | "rejected" | "unverified";
   taxInfo: {
     gstRate: string;
     cgstRate: string;

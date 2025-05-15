@@ -7,11 +7,15 @@ const OwnerSchema = new Schema<IOwner>(
     restaurant: {
       type: Schema.Types.ObjectId,
       ref: "Restaurant",
-      required: true,
     },
     businessName: { type: String, required: true },
     businessEmail: { type: String, required: true },
-    referralCode: { type: String, required: true },
+    referralCode: { type: String },
+    status: {
+      type: String,
+      enum: ["pending", "active", "rejected", "unverified"],
+      default: "pending",
+    },
     taxInfo: {
       gstRate: { type: String },
       cgstRate: { type: String },
