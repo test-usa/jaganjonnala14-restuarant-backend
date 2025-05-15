@@ -19,7 +19,6 @@
       
           const menudata = JSON.parse(data);
       
-          // Handle image upload
           if (file && file.path) {
             const imageName = `${Math.floor(100 + Math.random() * 900)}`;
             const { secure_url } = await uploadImgToCloudinary(imageName, file.path) as {
