@@ -99,7 +99,7 @@ export const authService = {
       const findUnverifiedUser = await userModel
         .findOne({ _id: findUnverifiedOwner?.user })
         .session(session);
-  
+
       if (!findUnverifiedUser) {
         throw new Error("No account found with this email. Please register first.");
       }

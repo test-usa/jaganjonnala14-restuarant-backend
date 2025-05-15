@@ -24,7 +24,13 @@ const postRestaurantLayout = async (payload: IRestaurantLayout) => {
 
 const getAllRestaurantLayout = async () => {
   const result = await RestaurantLayoutModel.find({ isDeleted: false })
-    .populate('restaurant')
+    .populate({
+      path: 'restaurant',
+      populate: {
+        path: 'menus',
+        model: 'Menu'  
+      }
+    })
     .populate('floor');
 
   return result;
