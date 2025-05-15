@@ -6,27 +6,29 @@ import { Request, Response } from "express";
     
     const postTable = catchAsync(async (req: Request, res: Response) => {
       const result = await tableService.postTableIntoDB(req.body);
-      sendResponse(res, { statusCode: status.CREATED, success: true, message: "Created successfully", data: result });
+      sendResponse(res, { statusCode: status.CREATED, success: true, message: "Table Created successfully", data: result });
     });
     
     const getAllTable = catchAsync(async (req: Request, res: Response) => {
       const result = await tableService.getAllTableFromDB(req.query);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Fetched successfully", data: result });
+      sendResponse(res, { statusCode: status.OK, success: true, message: "All table Fetched successfully", data: result });
     });
     
     const getSingleTable = catchAsync(async (req: Request, res: Response) => {
       const result = await tableService.getSingleTableFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Fetched successfully", data: result });
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Single table Fetched successfully", data: result });
     });
     
     const updateTable = catchAsync(async (req: Request, res: Response) => {
-      const result = await tableService.updateTableIntoDB(req.body);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Updated successfully", data: result });
+      const id = req.params.id;
+      const data = req.body
+      const result = await tableService.updateTableIntoDB(id,data );
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Table Updated successfully", data: result });
     });
     
     const deleteTable = catchAsync(async (req: Request, res: Response) => {
       await tableService.deleteTableFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Deleted successfully",data: null });
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Table Deleted successfully",data: null });
     });
 
     

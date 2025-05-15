@@ -1,8 +1,9 @@
-import { floorModel } from "./floor.model";
-      import { FLOOR_SEARCHABLE_FIELDS } from "./floor.constant";
-    import QueryBuilder from "../../builder/QueryBuilder";
+
     import status from "http-status";
     import AppError from "../../errors/AppError";
+    import { FloorModel } from "./floor.model";
+import { IFloor } from "./floor.interface";
+import { RestaurantModel } from "../restuarant/restuarant.model";
     
 
 
@@ -11,7 +12,15 @@ import { floorModel } from "./floor.model";
     export const floorService = {
       async postFloorIntoDB(data: any) {
       try {
-        return await floorModel.create(data);
+        
+        const restaurant = await  RestaurantModel.findOne({_id: data.restaurant});
+ 
+        if(!restaurant){
+          throw new AppError(400,"restaurant doesn't found");
+        }
+
+
+        return await FloorModel.create(data);
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
@@ -22,20 +31,9 @@ import { floorModel } from "./floor.model";
       },
       async getAllFloorFromDB(query: any) {
       try {
-    
-    
-      const service_query = new QueryBuilder(floorModel.find(), query)
-            .search(FLOOR_SEARCHABLE_FIELDS)
-            .filter()
-            .sort()
-            .paginate()
-            .fields();
-      
-          const result = await service_query.modelQuery;
-          const meta = await service_query.countTotal();
+          const result = await FloorModel.find({});
           return {
-            result,
-            meta,
+            result
           };
     
          } catch (error: unknown) {
@@ -48,7 +46,7 @@ import { floorModel } from "./floor.model";
       },
       async getSingleFloorFromDB(id: string) {
         try {
-        return await floorModel.findById(id);
+        return await FloorModel.findById(id);
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
@@ -57,17 +55,14 @@ import { floorModel } from "./floor.model";
           }
         }
       },
-      async updateFloorIntoDB(data: any) {
+      async updateFloorIntoDB(data:IFloor,id: string) {
       try {
-    
-    
-    
-      const isDeleted = await floorModel.findOne({ _id: data.id });
-        if (isDeleted?.isDelete) {
+      const isDeleted = await FloorModel.findOne({ _id: id });
+        if (isDeleted?.isDeleted) {
           throw new AppError(status.NOT_FOUND, "floor is already deleted");
         }
     
-        const result = await floorModel.updateOne({ _id: data.id }, data, {
+        const result = await FloorModel.findByIdAndUpdate({ _id: id }, data, {
           new: true,
         });
         if (!result) {
@@ -86,17 +81,12 @@ import { floorModel } from "./floor.model";
       },
       async deleteFloorFromDB(id: string) {
         try {
-    
-    
-     // Step 1: Check if the floor exists in the database
-        const isExist = await floorModel.findOne({ _id: id });
+        const isExist = await FloorModel.findOne({ _id: id });
     
         if (!isExist) {
           throw new AppError(status.NOT_FOUND, "floor not found");
         }
-    
-        // Step 4: Delete the home floor from the database
-        await floorModel.updateOne({ _id: id }, { isDelete: true });
+        await FloorModel.findByIdAndDelete({ _id: id });
         return;
     
          } catch (error: unknown) {

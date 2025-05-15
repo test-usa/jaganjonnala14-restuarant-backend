@@ -13,7 +13,7 @@ export const sendOtpToEmail = async (email: string, otp: string) => {
     });
 
     // Create a verification URL, for example
-    const verificationUrl = `${process.env.FRONTEND_URL}/verify-otp?email=${email}`;
+    const verificationUrl = `${process.env.FRONTEND_URL}/api/v1/auth/verify-otp?email=${email}`;
 
     const mailOptions = {
       from: `<${process.env.EMAIL_USER}>`,

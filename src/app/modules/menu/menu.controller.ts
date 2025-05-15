@@ -3,30 +3,35 @@ import { Request, Response } from "express";
     import catchAsync from "../../utils/catchAsync";
     import sendResponse from "../../utils/sendResponse";
     import status from "http-status";
+import { IMenu } from "./menu.interface";
     
     const postMenu = catchAsync(async (req: Request, res: Response) => {
-      const result = await menuService.postMenuIntoDB(req.body);
-      sendResponse(res, { statusCode: status.CREATED, success: true, message: "Created successfully", data: result });
+      const file = req.file;
+      const data = req.body.data;
+      const result = await menuService.postMenuIntoDB(data as IMenu, file as Express.Multer.File);
+      sendResponse(res, { statusCode: status.CREATED, success: true, message: "Menu Created successfully", data: result });
     });
     
     const getAllMenu = catchAsync(async (req: Request, res: Response) => {
       const result = await menuService.getAllMenuFromDB(req.query);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Fetched successfully", data: result });
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Menus Fetched successfully", data: result });
     });
     
     const getSingleMenu = catchAsync(async (req: Request, res: Response) => {
       const result = await menuService.getSingleMenuFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Fetched successfully", data: result });
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Single Menu Fetched successfully", data: result });
     });
     
     const updateMenu = catchAsync(async (req: Request, res: Response) => {
-      const result = await menuService.updateMenuIntoDB(req.body);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Updated successfully", data: result });
+      const data = req.body;
+      const id = req.params.id;
+      const result = await menuService.updateMenuIntoDB(data,id);
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Menu Updated successfully", data: result });
     });
     
     const deleteMenu = catchAsync(async (req: Request, res: Response) => {
       await menuService.deleteMenuFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Deleted successfully",data: null });
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Menu Deleted successfully",data: null });
     });
 
     

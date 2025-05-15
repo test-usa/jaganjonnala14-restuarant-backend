@@ -19,7 +19,6 @@ export type IUser = {
   provider?: string;
   email: string;
   phone: string;
-  isVerified: boolean;
   role: IUserRole;
   image: string;
   password: string;

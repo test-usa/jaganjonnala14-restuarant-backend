@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 
 export interface IOrder {
   restaurant: Types.ObjectId;
-  table: Types.ObjectId;
+  zone: Types.ObjectId;
   menus: Types.ObjectId[]; // Array of Menu IDs
   customerName: string;
   customerPhone: string;

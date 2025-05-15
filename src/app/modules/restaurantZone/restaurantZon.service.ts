@@ -1,17 +1,17 @@
-import { restaurantZoneTypeModel } from "./restaurantZone.model";
-      import { RESTAURANTZONETYPE_SEARCHABLE_FIELDS } from "./restaurantZone.constant";
-    import QueryBuilder from "../../builder/QueryBuilder";
-    import status from "http-status";
-    import AppError from "../../errors/AppError";
+
+import status from "http-status";
+import AppError from "../../errors/AppError";
+import { IRestaurantZone } from "./restaurantZone.interface";
+import { RestaurantZone } from "./restaurantZone.model";
     
-
-
-
-
     export const restaurantZoneTypeService = {
-      async postRestaurantZoneTypeIntoDB(data: any) {
+      async postRestaurantZoneTypeIntoDB(data:IRestaurantZone) {
       try {
-        return await restaurantZoneTypeModel.create(data);
+
+        const result  =  await RestaurantZone.create(data);
+
+        return result;
+        
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
@@ -23,20 +23,8 @@ import { restaurantZoneTypeModel } from "./restaurantZone.model";
       async getAllRestaurantZoneTypeFromDB(query: any) {
       try {
     
-    
-      const service_query = new QueryBuilder(restaurantZoneTypeModel.find(), query)
-            .search(RESTAURANTZONETYPE_SEARCHABLE_FIELDS)
-            .filter()
-            .sort()
-            .paginate()
-            .fields();
-      
-          const result = await service_query.modelQuery;
-          const meta = await service_query.countTotal();
-          return {
-            result,
-            meta,
-          };
+    const result = await RestaurantZone.find({});
+      return result
     
          } catch (error: unknown) {
           if (error instanceof Error) {
@@ -48,7 +36,7 @@ import { restaurantZoneTypeModel } from "./restaurantZone.model";
       },
       async getSingleRestaurantZoneTypeFromDB(id: string) {
         try {
-        return await restaurantZoneTypeModel.findById(id);
+        return await RestaurantZone.findById(id);
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
@@ -57,17 +45,17 @@ import { restaurantZoneTypeModel } from "./restaurantZone.model";
           }
         }
       },
-      async updateRestaurantZoneTypeIntoDB(data: any) {
+      async updateRestaurantZoneTypeIntoDB(data:Partial<IRestaurantZone>,id:string) {
       try {
     
     
     
-      const isDeleted = await restaurantZoneTypeModel.findOne({ _id: data.id });
-        if (isDeleted?.isDelete) {
+      const isDeleted = await RestaurantZone.findOne({ _id: id });
+        if (isDeleted?.isDeleted) {
           throw new AppError(status.NOT_FOUND, "restaurantZoneType is already deleted");
         }
     
-        const result = await restaurantZoneTypeModel.updateOne({ _id: data.id }, data, {
+        const result = await RestaurantZone.updateOne({ _id: id }, data, {
           new: true,
         });
         if (!result) {
@@ -87,17 +75,14 @@ import { restaurantZoneTypeModel } from "./restaurantZone.model";
       async deleteRestaurantZoneTypeFromDB(id: string) {
         try {
     
-    
-     // Step 1: Check if the restaurantZoneType exists in the database
-        const isExist = await restaurantZoneTypeModel.findOne({ _id: id });
+        const isExist = await RestaurantZone.findOne({ _id: id });
     
         if (!isExist) {
           throw new AppError(status.NOT_FOUND, "restaurantZoneType not found");
         }
-    
-        // Step 4: Delete the home restaurantZoneType from the database
-        await restaurantZoneTypeModel.updateOne({ _id: id }, { isDelete: true });
-        return;
+   
+        const result =    await RestaurantZone.findByIdAndDelete({ _id: id });
+        return result;
     
          } catch (error: unknown) {
           if (error instanceof Error) {
