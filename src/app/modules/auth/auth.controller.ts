@@ -30,9 +30,7 @@ const restuarantRegisterRequest = catchAsync(
 const otpValidation = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userEmail = req.query.email as string;
-    await authService.otpValidationIntoDB(
-      req.body, userEmail
-    );
+    await authService.otpValidationIntoDB(req.body, userEmail);
     sendResponse(res, {
       statusCode: status.CREATED,
       success: true,
@@ -41,6 +39,62 @@ const otpValidation = catchAsync(
     });
   }
 );
+
+const resendOtp = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const email = req.query.email as string;
+    if (!email) {
+      throw new Error("Email is required to resend OTP.");
+    }
+
+    await authService.resendOtpToUser(email);
+
+    sendResponse(res, {
+      statusCode: status.OK,
+      success: true,
+      message: "A new OTP has been sent to your email.",
+      data: null,
+    });
+  }
+);
+
+const forgotPassword = catchAsync(async (req: Request, res: Response) => {
+  const { email } = req.body;
+  await authService.sendPasswordResetOtp(email);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "An OTP has been sent to your email to reset your password.",
+    data: null,
+  });
+});
+
+const verifyResetOtp = catchAsync(async (req: Request, res: Response) => {
+  const { email, otp } = req.body;
+  await authService.verifyPasswordResetOtp(email, otp);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "OTP verified. You can now reset your password.",
+    data: null,
+  });
+});
+
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+  const { email, newPassword } = req.body;
+  await authService.resetPassword(email, newPassword);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Your password has been reset successfully.",
+    data: null,
+  });
+});
+
+
 
 
 const Login = catchAsync(
@@ -156,25 +210,22 @@ const OAuthCallback = (req: Request, res: Response) => {
     });
 
     // Send access token + user info
-    // return sendResponse(res, {
-    //   statusCode: status.OK,
-    //   success: true,
-    //   message: "Login successful",
-    //   data: {
-    //     accessToken,
-    //     user: {
-    //       name: user.user?.fullName || user.name,
-    //       email: user.user?.email || user.email,
-    //       image: user.user?.image || user.image,
-    //       role: user.role,
-    //     },
-    //   },
-    // });
+    return sendResponse(res, {
+      statusCode: status.OK,
+      success: true,
+      message: "Login successful",
+      data: {
+        accessToken,
+        user: {
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          role: user.role,
+        },
+      },
+    });
 
-    // Or redirect if needed:
-    res.redirect(
-      `${process.env.FRONTEND_URL}/oauth-success?accessToken=${accessToken}`
-    );
+   
   } catch (error) {
     console.error("OAuth Callback Error:", error);
     res.status(500).json({ success: false, message: "OAuth login failed" });
@@ -198,151 +249,129 @@ const Logout = catchAsync(
     });
   }
 );
-// 7. Get user profile
-const getUserProfile = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.userId; // Assuming you have middleware to set req.user
+// // 7. Get user profile
+// const getUserProfile = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const userId = req.userId; // Assuming you have middleware to set req.user
 
-    const user: IUser | null = await userModel
-      .findById(userId)
-      .select("-password");
+//     const user: IUser | null = await userModel
+//       .findById(userId)
+//       .select("-password");
 
-    if (!user) {
-      throw new AppError(status.NOT_FOUND, "User not found");
-    }
+//     if (!user) {
+//       throw new AppError(status.NOT_FOUND, "User not found");
+//     }
 
-    sendResponse(res, {
-      statusCode: status.OK,
-      success: true,
-      message: "User profile fetched successfully",
-      data: user,
-    });
-  }
-);
-// 8. Update user profile
-const updateUserProfile = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.userId; // Assuming you have middleware to set req.user
+//     sendResponse(res, {
+//       statusCode: status.OK,
+//       success: true,
+//       message: "User profile fetched successfully",
+//       data: user,
+//     });
+//   }
+// );
+// // 8. Update user profile
+// const updateUserProfile = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const userId = req.userId; // Assuming you have middleware to set req.user
 
-    const updatedUser: IUser | null = await userModel.findByIdAndUpdate(
-      userId,
-      req.body,
-      { new: true }
-    );
+//     const updatedUser: IUser | null = await userModel.findByIdAndUpdate(
+//       userId,
+//       req.body,
+//       { new: true }
+//     );
 
-    if (!updatedUser) {
-      throw new AppError(status.NOT_FOUND, "User not found");
-    }
+//     if (!updatedUser) {
+//       throw new AppError(status.NOT_FOUND, "User not found");
+//     }
 
-    sendResponse(res, {
-      statusCode: status.OK,
-      success: true,
-      message: "User profile updated successfully",
-      data: updatedUser,
-    });
-  }
-);
-// 9. Delete user profile
-const deleteUserProfile = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.userId; // Assuming you have middleware to set req.user
+//     sendResponse(res, {
+//       statusCode: status.OK,
+//       success: true,
+//       message: "User profile updated successfully",
+//       data: updatedUser,
+//     });
+//   }
+// );
+// // 9. Delete user profile
+// const deleteUserProfile = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const userId = req.userId; // Assuming you have middleware to set req.user
 
-    const deletedUser: IUser | null = await userModel.findByIdAndDelete(userId);
+//     const deletedUser: IUser | null = await userModel.findByIdAndDelete(userId);
 
-    if (!deletedUser) {
-      throw new AppError(status.NOT_FOUND, "User not found");
-    }
+//     if (!deletedUser) {
+//       throw new AppError(status.NOT_FOUND, "User not found");
+//     }
 
-    sendResponse(res, {
-      statusCode: status.OK,
-      success: true,
-      message: "User profile deleted successfully",
-      data: null,
-    });
-  }
-);
-// 10. Change password
-const changePassword = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.userId; // Assuming you have middleware to set req.user
+//     sendResponse(res, {
+//       statusCode: status.OK,
+//       success: true,
+//       message: "User profile deleted successfully",
+//       data: null,
+//     });
+//   }
+// );
+// // 10. Change password
+// const changePassword = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const userId = req.userId; // Assuming you have middleware to set req.user
 
-    const { oldPassword, newPassword } = req.body;
+//     const { oldPassword, newPassword } = req.body;
 
-    // Check if user exists
-    const user: IUser | null = await userModel
-      .findById(userId)
-      .select("+password");
+//     // Check if user exists
+//     const user: IUser | null = await userModel
+//       .findById(userId)
+//       .select("+password");
 
-    if (!user) {
-      throw new AppError(status.NOT_FOUND, "User not found");
-    }
+//     if (!user) {
+//       throw new AppError(status.NOT_FOUND, "User not found");
+//     }
 
-    // Compare old password using bcrypt directly
-    const isMatch = await bcrypt.compare(oldPassword, user.user.password);
-    if (!isMatch) {
-      throw new AppError(status.UNAUTHORIZED, "Old password is incorrect");
-    }
+//     // Compare old password using bcrypt directly
+//     const isMatch = await bcrypt.compare(oldPassword, user.user.password);
+//     if (!isMatch) {
+//       throw new AppError(status.UNAUTHORIZED, "Old password is incorrect");
+//     }
 
-    // Update password
-    user.user.password = newPassword;
-    await userModel.updateOne({ _id: user._id }, { password: newPassword });
+//     // Update password
+//     user.user.password = newPassword;
+//     await userModel.updateOne({ _id: user._id }, { password: newPassword });
 
-    sendResponse(res, {
-      statusCode: status.OK,
-      success: true,
-      message: "Password changed successfully",
-      data: null,
-    });
-  }
-);
-// 11. Reset password
-const resetPassword = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { email, newPassword } = req.body;
+//     sendResponse(res, {
+//       statusCode: status.OK,
+//       success: true,
+//       message: "Password changed successfully",
+//       data: null,
+//     });
+//   }
+// );
+// // 11. Reset password
 
-    // Check if user exists
-    const user: IUser | null = await userModel
-      .findOne({ email })
-      .select("+password");
+// // 12. Verify email
+// const verifyEmail = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { email } = req.body;
 
-    if (!user) {
-      throw new AppError(status.NOT_FOUND, "User not found");
-    }
+//     // Check if user exists
+//     const user: IUser | null = await userModel.findOne({ email });
 
-    // Update password
-    user.password = newPassword;
-    await userModel.updateOne({ _id: user._id }, { password: newPassword });
+//     if (!user) {
+//       throw new AppError(status.NOT_FOUND, "User not found");
+//     }
 
-    sendResponse(res, {
-      statusCode: status.OK,
-      success: true,
-      message: "Password reset successfully",
-      data: null,
-    });
-  }
-);
-// 12. Verify email
-const verifyEmail = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { email } = req.body;
+//     // Verify email logic here (e.g., send verification link)
 
-    // Check if user exists
-    const user: IUser | null = await userModel.findOne({ email });
+//     sendResponse(res, {
+//       statusCode: status.OK,
+//       success: true,
+//       message: "Email verification link sent",
+//       data: null,
+//     });
+//   }
+// );
 
-    if (!user) {
-      throw new AppError(status.NOT_FOUND, "User not found");
-    }
 
-    // Verify email logic here (e.g., send verification link)
-
-    sendResponse(res, {
-      statusCode: status.OK,
-      success: true,
-      message: "Email verification link sent",
-      data: null,
-    });
-  }
-);
 // 13. Verify phone number
 const verifyPhoneNumber = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -457,15 +486,19 @@ const verifyEmailOTP = catchAsync(
 export const authController = {
   restuarantRegisterRequest,
   otpValidation,
+  resendOtp,
+  forgotPassword,
+  verifyResetOtp,
   Login,
   OAuthCallback,
   Logout,
-  getUserProfile,
-  updateUserProfile,
-  deleteUserProfile,
-  changePassword,
+  // getUserProfile,
+  // updateUserProfile,
+  // deleteUserProfile,
+  // changePassword,
+  // verifyEmail,
+
   resetPassword,
-  verifyEmail,
   verifyPhoneNumber,
   resendVerificationEmail,
   resendVerificationPhoneNumber,

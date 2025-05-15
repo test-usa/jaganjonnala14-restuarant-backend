@@ -13,6 +13,12 @@ router.post(
   authController.restuarantRegisterRequest
 );
 router.post("/verify-otp", authController.otpValidation)
+router.post("/resend-otp", authController.resendOtp);
+router.post("/forgot-password", authController.forgotPassword);
+router.post("/verify-password-otp", authController.verifyResetOtp);
+router.post("/reset-password", authController.resetPassword);
+
+
 
 // Google OAuth
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));

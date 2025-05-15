@@ -18,14 +18,11 @@ const UserSchema = new Schema<IUser>(
   {
     name: { type: String },
     email: { type: String },
-    providerId: { type: String },
-    provider: { type: String },
+    providerId: { type: String , default: null},
+    provider: { type: String,  default: null},
     phone: { type: String },
     password: { type: String },
-    isVerified: {
-      type: Boolean,
-   
-    },
+
     image: { type: String, nullable: true },
     otp: {
       type: String,
