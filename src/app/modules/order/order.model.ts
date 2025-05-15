@@ -8,7 +8,7 @@ const OrderSchema = new Schema<IOrder>(
       ref: "Restaurant",
       required: true,
     },
-    zone : { type: Schema.Types.ObjectId, ref: "Table", required: false },
+    zone : { type: Schema.Types.ObjectId, ref: "RestaurantZone" ,default:"" },
     menus: [{ type: Types.ObjectId, ref: "Menu", required: true }],
     customerName: { type: String, required: true },
     customerPhone: { type: String, required: true },

@@ -1,34 +1,78 @@
 import { Request, Response } from "express";
-    import { restuarantService } from "./restuarant.service";
-    import catchAsync from "../../utils/catchAsync";
-    import sendResponse from "../../utils/sendResponse";
-    import status from "http-status";
-    
-    const postRestuarant = catchAsync(async (req: Request, res: Response) => {
-      const result = await restuarantService.postRestuarantIntoDB(req.body);
-      sendResponse(res, { statusCode: status.CREATED, success: true, message: "Created successfully", data: result });
-    });
-    
-    const getAllRestuarant = catchAsync(async (req: Request, res: Response) => {
-      const result = await restuarantService.getAllRestuarantFromDB(req.query);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Fetched successfully", data: result });
-    });
-    
-    const getSingleRestuarant = catchAsync(async (req: Request, res: Response) => {
-      const result = await restuarantService.getSingleRestuarantFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Fetched successfully", data: result });
-    });
-    
-    const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
-      const result = await restuarantService.updateRestuarantIntoDB(req.body);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Updated successfully", data: result });
-    });
-    
-    const deleteRestuarant = catchAsync(async (req: Request, res: Response) => {
-      await restuarantService.deleteRestuarantFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Deleted successfully",data: null });
-    });
+import httpStatus from "http-status";
+import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
+import { restaurantService } from "./restuarant.service";
+import { IRestaurant } from "./restuarant.interface";
+import { uploadImgToCloudinary, uploadMultipleImages } from "../../utils/sendImageToCloudinary";
 
-    
-    export const restuarantController = { postRestuarant, getAllRestuarant, getSingleRestuarant, updateRestuarant, deleteRestuarant };
-    
+
+const postRestuarant = catchAsync(async (req: Request, res: Response) => {
+
+  const data = JSON.parse(req.body.data);
+
+  const files = (req.files as any)?.images?.map((file: Express.Multer.File) => file.path);
+  const uploadLogo = (req.files as any)?.logo?.[0]?.path;
+
+  const {  secure_url} = await uploadImgToCloudinary("logo",uploadLogo)
+  const uploadedImages = await uploadMultipleImages(files);
+  const {images,coverPhoto,logo,...rest} =  data;
+  const restaurantData = {images:uploadedImages,logo:secure_url,coverPhoto:uploadedImages[0],...rest}
+  
+  const result = await restaurantService.postRestaurant(restaurantData);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "Restaurant created successfully",
+    data: result,
+  });
+});
+
+
+const getAllRestuarant = catchAsync(async (_req: Request, res: Response) => {
+  const result = await restaurantService.getAllRestaurant();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Restaurants retrieved successfully",
+    data: result,
+  });
+});
+
+const getSingleRestuarant = catchAsync(async (req: Request, res: Response) => {
+  const result = await restaurantService.getSingleRestaurant(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Restaurant retrieved successfully",
+    data: result,
+  });
+});
+
+const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
+  const result = await restaurantService.updateRestaurant(req.params.id, req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Restaurant updated successfully",
+    data: result,
+  });
+});
+
+const deleteRestuarant = catchAsync(async (req: Request, res: Response) => {
+  const result = await restaurantService.deleteRestaurant(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Restaurant deleted successfully",
+    data: result,
+  });
+});
+
+export const restuarantController = {
+  postRestuarant,
+  getAllRestuarant,
+  getSingleRestuarant,
+  updateRestuarant,
+  deleteRestuarant,
+};
