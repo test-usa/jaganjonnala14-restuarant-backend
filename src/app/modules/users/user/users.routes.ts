@@ -1,23 +1,27 @@
 import express from "express";
 import { validateRequest } from "../../../middlewares/validateRequest";
-import { usersController } from "./users.controller";
+
 import { userInputSchema, usersUpdateValidation } from "./users.validation";
+import { userController } from "./users.controller";
 
 const router = express.Router();
 
 router.post(
-  "/post_users",
+  "/create-user",
   validateRequest(userInputSchema),
-  usersController.postUsers
+  userController.createUser
 );
 
-router.get("/get_all_users", usersController.getAllUsers);
-router.get("/get_single_users/:id", usersController.getSingleUsers);
+router.get("/all-users", userController.getAllUsers);
+
+router.get("/single-user/:id", userController.getSingleUser);
+
 router.put(
-  "/update_users/:id",
+  "/update-user/:id",
   validateRequest(usersUpdateValidation),
-  usersController.updateUsers
+  userController.updateUser
 );
-router.delete("/delete_users/:id", usersController.deleteUsers);
+
+router.delete("/delete-user/:id", userController.deleteUser);
 
 export const usersRoutes = router;

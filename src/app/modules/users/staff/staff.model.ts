@@ -6,8 +6,13 @@ const StaffSchema = new Schema<IStaff>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     restaurant: { type: Schema.Types.ObjectId,  ref: "Restaurant", required: true },
-    workDay: { type: String, required: true }, // e.g., "Mon-Fri", or "Sunday"
-    workTime: { type: String, required: true }, // e.g., "09:00 - 17:00"
+    workDay: { type: String, required: true }, 
+    workTime: { type: String, required: true }, 
+    status:{
+      type:String,
+      enum: ['active','inactive'],
+      default: "active"
+    },
     isDeleted: {
         type: Boolean,
         default: false

@@ -13,6 +13,7 @@ import { authService } from "./auth.service";
 import { OwnerModel } from "../users/owner/owner.model";
 import { RESTAURANT_STATUS } from "../restuarant/restuarant.constant";
 import { OWNER_STATUS } from "../users/owner/owner.constant";
+import { RestaurantModel } from "../restuarant/restuarant.model";
 
 const restuarantRegisterRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -152,6 +153,11 @@ const Login = catchAsync(
         );
       }
     }
+
+  
+    const restaurantId = await RestaurantModel.findOne({owner:user._id});
+
+     console.log(restaurantId)
 
     const payload = {
       userId: user._id,
@@ -450,7 +456,8 @@ const resendVerificationPhoneNumber = catchAsync(
       message: "Verification phone number resent",
       data: null,
     });
-  }
+  },
+
 );
 // 16. Verify phone number OTP
 const verifyPhoneNumberOTP = catchAsync(
@@ -497,6 +504,22 @@ const verifyEmailOTP = catchAsync(
   }
 );
 
+const approveRestaurantByAdmin = catchAsync(async(req,res)=>{
+  
+
+  const email = req.body.email;
+
+  const result = await authService.approveRestaurantByAdmin(email);
+
+  
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Restaurant  approved successfully",
+    data: result,
+  });
+})
+
 export const authController = {
   restuarantRegisterRequest,
   otpValidation,
@@ -518,4 +541,5 @@ export const authController = {
   resendVerificationPhoneNumber,
   verifyPhoneNumberOTP,
   verifyEmailOTP,
+  approveRestaurantByAdmin
 };
