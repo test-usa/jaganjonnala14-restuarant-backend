@@ -1,62 +1,36 @@
 import { z } from "zod";
+import mongoose from "mongoose";
 
-export const restaurantSchema = z
-  .object({
-    name: z.string(),
-    businessName: z.string(),
-    businessEmail: z.string().email(),
-    phone: z.string(),
-    gstRate: z.string(),
-    cgstRate: z.string(),
-    sgstRate: z.string(),
-    address: z.string(),
-    logo: z.string().url(),
-    tagline: z.string(),
-    coverPhoto: z.array(z.string().url()),
-    description: z.string(),
-    referralCode: z.string(),
-  })
-  .nullable();
+const objectIdValidator = z
+  .string()
+  .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "Invalid ObjectId",
+  });
 
-export const staffSchema = z
-  .object({
-    workDays: z.string(),
-    workTime: z.string(),
-  })
-  .nullable();
+const roleEnum = z.enum([
+  "admin",
+  "restaurant_owner",
+  "staff",
+  "customer",
+  "manager",
+  "dine in",
+  "waiter",
+  "chief",
+  "cashier",
+  "maintenance",
+]);
 
 export const userInputSchema = z.object({
-  user: z.object({
-    name: z.string(),
-    email: z.string().email().optional(),
-    fullName: z.string(),
-    nickName: z.string(),
-    gender: z.enum(["male", "female"]),
-    country: z.string(),
-    language: z.string(),
-    timeZone: z.string(),
-    phone: z.string(),
-    password: z.string().min(6),
-    image: z.string().url().optional(),
-    address: z.string().optional(),
-    role: z
-      .enum([
-        "admin",
-        "restaurant_owner",
-        "staff",
-        "customer",
-        "manager",
-        "dine in",
-        "waiter",
-        "chief",
-        "cashier",
-        "maintenance",
-      ])
-      .optional(),
-  }),
-  restaurant: restaurantSchema,
-  staff: staffSchema,
-  status: z.enum(["active", "inactive", "pending"]),
+  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  phone: z.string().min(7, { message: "Phone number is required" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  role: roleEnum,
+  image: z.string().url({ message: "Invalid image URL" }).optional(),
+  providerId: z.string().optional().nullable(),
+  provider: z.string().optional().nullable(),
+  otp: z.string().optional().nullable(),
+  otpExpiresAt: z.string().datetime().optional().nullable(),
 });
 
 export const usersUpdateValidation = userInputSchema.partial();

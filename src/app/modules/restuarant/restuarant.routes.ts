@@ -2,7 +2,7 @@
     import express from "express";
     import { validateRequest } from "../../middlewares/validateRequest";
     import { restuarantController } from "./restuarant.controller";
-    import { restuarantPostValidation,restuarantUpdateValidation } from "./restuarant.validation";
+    import { restuarantUpdateValidation } from "./restuarant.validation";
 import { upload } from "../../utils/sendImageToCloudinary";
 
     const router = express.Router();

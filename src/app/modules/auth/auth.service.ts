@@ -7,24 +7,27 @@ import { OwnerModel } from "../users/owner/owner.model";
 import { generateOtp } from "../../utils/generateOtp";
 import { sendOtpToEmail } from "../../utils/sendOtpToEmail";
 import { OWNER_STATUS } from "../users/owner/owner.constant";
+import { RestaurantModel } from "../restuarant/restuarant.model";
+import AppError from "../../errors/AppError";
 
 export const authService = {
   async restuarantRegisterRequestIntoDB(data: IRestaurantValidationRequest) {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-      // 1. create user
-      const existingUser: any = await userModel
+      // 1. Check if user already exists
+      const existingUser = await userModel
         .findOne({ email: data.businessEmail })
         .session(session);
-
+  
       if (existingUser) {
         throw new Error("Restaurant owner already exists.");
       }
-
+  
       const hashedPassword = await bcrypt.hash(data.password, 10);
       const otp = generateOtp(4);
-
+  
+      // 2. Create new user
       const newUser = await userModel.create(
         [
           {
@@ -39,9 +42,8 @@ export const authService = {
         ],
         { session }
       );
-
- 
-      // 2. create owner
+  
+      // 3. Create owner
       const newOwner = await OwnerModel.create(
         [
           {
@@ -50,37 +52,42 @@ export const authService = {
             businessEmail: data.businessEmail,
             status: OWNER_STATUS.UNVERIFIED,
             referralCode: data.referralCode,
-             
           },
         ],
         { session }
       );
-
- 
-
-      //3. send OTP via SMS/email
-      await sendOtpToEmail(newOwner[0].businessEmail, otp);
-      // await sendOtpToPhone(data.phone, otp);
-
-      // ✅ COMMIT the transaction
+  
+      // 4. Create restaurant
+      const restaurantData = {
+        owner: newOwner[0]._id,
+        restaurantName: " ",
+        menus: [],
+        status: "pending",
+        restaurantAddress: data.restaurantAddress,
+        phone: " ",
+        logo: " ",
+        tagline: "",
+        coverPhoto: "",
+        images: [],
+        description: "",
+      };
+  
+      await RestaurantModel.create([restaurantData], { session });
+  
+      // 5. Commit transaction
       await session.commitTransaction();
       session.endSession();
-
+  
       return {
-        userId: newUser[0]._id,
-        ownerId: newOwner[0]._id,
+        message: "Restaurant registration successful",
       };
-    } catch (error: unknown) {
+    } catch (error) {
       await session.abortTransaction();
       session.endSession();
-
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred during registration.");
-      }
+      throw new AppError(500, "Registration failed: " + (error as Error).message);
     }
   },
+  
   async otpValidationIntoDB(data: any, userEmail: string) {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -230,10 +237,39 @@ export const authService = {
     const hashed = await bcrypt.hash(newPassword, 10);
     user.password = hashed;
     await user.save();
+  },
+  
+  async approveRestaurantByAdmin(email: string) {
+    // 1. Find the user
+    const findOwnerUser = await userModel.findOne({ email, role: "restaurant_owner" });
+  
+    if (!findOwnerUser) {
+      throw new AppError(400, "You are not a restaurant owner");
+    }
+  
+    // 2. Find the owner using the user ID
+    const owner = await OwnerModel.findOne({ user: findOwnerUser._id });
+    if (!owner) {
+      throw new AppError(404, "Owner not found");
+    }
+  
+    // 3. Find the restaurant using the owner ID
+    const ownerRestaurant = await RestaurantModel.findOneAndUpdate(
+      { owner: owner._id },
+      { status: "active" },
+      { new: true } 
+    );
+    
+  
+    if (!ownerRestaurant) {
+      throw new AppError(404, "Restaurant not found");
+    }
+  
+  
+    return ownerRestaurant;
   }
   
   
-  
-  
+
   
 };

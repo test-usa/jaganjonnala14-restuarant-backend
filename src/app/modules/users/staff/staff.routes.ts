@@ -2,21 +2,22 @@ import express from "express";
 import { validateRequest } from "../../../middlewares/validateRequest";
 import { staffController } from "./staff.controller";
 import { staffPostValidation, staffUpdateValidation } from "./staff.validation";
+import { upload } from "../../../utils/sendImageToCloudinary";
 
 const router = express.Router();
 
 router.post(
-  "/post_staff",
-  validateRequest(staffPostValidation),
-  staffController.postStaff
+  "/create-staff",
+  upload.single("image"), 
+  staffController.createStaff
 );
-router.get("/get_all_staff", staffController.getAllStaff);
-router.get("/get_single_staff/:id", staffController.getSingleStaff);
+router.get("/all-staff", staffController.getAllStaff);
+router.get("/single-staff/:id", staffController.getSingleStaff);
 router.put(
-  "/update_staff/:id",
-  validateRequest(staffUpdateValidation),
+  "/update-staff/:id",upload.single('image'),
   staffController.updateStaff
 );
-router.delete("/delete_staff/:id", staffController.deleteStaff);
+
+router.delete("/delete-staff/:id", staffController.deleteStaff);
 
 export const staffRoutes = router;
