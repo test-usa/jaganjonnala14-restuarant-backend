@@ -45,6 +45,7 @@ const otpValidation = catchAsync(
 const resendOtp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const email = req.query.email as string;
+    
     if (!email) {
       throw new Error("Email is required to resend OTP.");
     }

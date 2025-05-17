@@ -15,7 +15,6 @@ export const menuPostValidation = z.object({
 
   image: z
     .string()
-    .url({ message: "Image must be a valid URL" })
     .optional()
     .default(""),
 

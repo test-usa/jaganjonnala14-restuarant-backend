@@ -9,9 +9,12 @@ import { ICategory } from "./category.interface";
   const file = req.file;
   const data = req.body.data;
 
+  
+
   const result = await categoryService.postCategoryIntoDB(data as ICategory, file as Express.Multer.File);
   
   sendResponse(res, {
+
     statusCode: status.CREATED,
     success: true,
     message: "Category Created successfully",

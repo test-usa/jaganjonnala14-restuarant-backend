@@ -19,7 +19,9 @@ export const authService = {
       const existingUser = await userModel
         .findOne({ email: data.businessEmail })
         .session(session);
-  
+
+
+        
       if (existingUser) {
         throw new Error("Restaurant owner already exists.");
       }

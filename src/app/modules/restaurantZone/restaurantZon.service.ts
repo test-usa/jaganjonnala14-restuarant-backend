@@ -13,12 +13,8 @@ import { RestaurantZone } from "./restaurantZone.model";
         return result;
         
          } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
+          throw error;
+        } 
       },
       async getAllRestaurantZoneTypeFromDB(query: any) {
       try {

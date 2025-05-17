@@ -57,11 +57,7 @@
           await session.abortTransaction();
           session.endSession();
       
-          if (error instanceof Error) {
-            throw new Error(`Transaction failed: ${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred during menu creation.");
-          }
+          throw error;
         }
       },
       async getAllMenuFromDB(query: any) {
