@@ -41,7 +41,7 @@ const getSingleRestaurantLayout = async (id: string) => {
   const result = await RestaurantLayoutModel.findById(id)
     .populate('floor')
     .populate({
-      path: 'Restaurant',
+      path: 'restaurant',
       populate: {
         path: 'menus', // this will now populate the menu documents
       },

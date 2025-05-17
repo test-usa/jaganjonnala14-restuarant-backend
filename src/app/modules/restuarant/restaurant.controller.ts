@@ -61,24 +61,34 @@ const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
   
     const id = req.params.id;
   
-    const files = (req.files as any)?.images?.map((file: Express.Multer.File) => file.path);
+    const files = (req.files as any)?.images?.map((file: Express.Multer.File) => file.path) || [];
     const uploadLogo = (req.files as any)?.logo?.[0]?.path;
   
     const { images, coverPhoto, logo, ...rest } = data;
   
-  
     const restaurantData: Partial<IRestaurant> = { ...rest };
   
-  
+    // Upload logo if provided
     if (uploadLogo) {
-      const { secure_url } = await uploadImgToCloudinary("logo", uploadLogo);
-      restaurantData.logo = secure_url;
+      try {
+        const { secure_url } = await uploadImgToCloudinary("logo", uploadLogo);
+        restaurantData.logo = secure_url;
+      } catch (err) {
+        console.error("Error uploading logo to Cloudinary:", err);
+        throw new AppError(500, "Failed to upload logo");
+      }
     }
   
-    if (files && files.length > 0) {
-      const uploadedImages = await uploadMultipleImages(files);
-      restaurantData.images = uploadedImages;
-      restaurantData.coverPhoto = uploadedImages[0]; // Set the first image as cover photo
+    // Upload images if provided
+    if (files.length > 0) {
+      try {
+        const uploadedImages = await uploadMultipleImages(files);
+        restaurantData.images = uploadedImages;
+        restaurantData.coverPhoto = uploadedImages[0]; // Optional: pick the first as cover
+      } catch (err) {
+        console.error("Error uploading images to Cloudinary:", err);
+        throw new AppError(500, "Failed to upload images");
+      }
     }
   
     const validate = await validateData(restuarantUpdateValidation, restaurantData) as Partial<IRestaurant>;
@@ -92,6 +102,7 @@ const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
       data: result,
     });
   });
+  
   
 
 const deleteRestuarant = catchAsync(async (req: Request, res: Response) => {

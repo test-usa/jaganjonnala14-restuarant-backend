@@ -241,35 +241,55 @@ export const authService = {
     await user.save();
   },
   
+
+
   async approveRestaurantByAdmin(email: string) {
-    // 1. Find the user
-    const findOwnerUser = await userModel.findOne({ email, role: "restaurant_owner" });
+    const session = await mongoose.startSession();
   
-    if (!findOwnerUser) {
-      throw new AppError(400, "You are not a restaurant owner");
+    try {
+      session.startTransaction();
+  
+      // 1. Find the user
+      const findOwnerUser = await userModel.findOne({ email, role: "restaurant_owner" }).session(session);
+  
+      if (!findOwnerUser) {
+        throw new AppError(400, "You are not a user");
+      }
+  console.log( findOwnerUser )
+      // 2. Activate the Owner
+      const owner = await OwnerModel.findOneAndUpdate(
+        { user: findOwnerUser._id },
+        { status: "active" },
+        { new: true, session }
+      );
+      if (!owner) {
+        throw new AppError(404, "Owner not found");
+      }
+  
+      // 3. Activate the Restaurant
+      const ownerRestaurant = await RestaurantModel.findOneAndUpdate(
+        { owner: owner._id },
+        { status: "active" },
+        { new: true, session }
+      );
+      
+      console.log(ownerRestaurant)
+      if (!ownerRestaurant) {
+        throw new AppError(404, "Restaurant not found");
+      }
+  
+      // 4. Commit transaction
+      await session.commitTransaction();
+      session.endSession();
+  
+      return ownerRestaurant;
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
     }
-  
-    // 2. Find the owner using the user ID
-    const owner = await OwnerModel.findOneAndUpdate({ user: findOwnerUser._id,status:"active"});
-    if (!owner) {
-      throw new AppError(404, "Owner not found");
-    }
-  
-    // 3. Find the restaurant using the owner ID
-    const ownerRestaurant = await RestaurantModel.findOneAndUpdate(
-      { owner: owner._id },
-      { status: "active" },
-      { new: true } 
-    );
-    
-  
-    if (!ownerRestaurant) {
-      throw new AppError(404, "Restaurant not found");
-    }
-  
-  
-    return ownerRestaurant;
   }
+  
   
   
 
