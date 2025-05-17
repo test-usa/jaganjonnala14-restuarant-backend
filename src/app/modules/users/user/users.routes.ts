@@ -3,6 +3,7 @@ import { validateRequest } from "../../../middlewares/validateRequest";
 
 import { userInputSchema, usersUpdateValidation } from "./users.validation";
 import { userController } from "./users.controller";
+import { upload } from "../../../utils/sendImageToCloudinary";
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ router.get("/all-users", userController.getAllUsers);
 router.get("/single-user/:id", userController.getSingleUser);
 
 router.put(
-  "/update-user/:id",
+  "/update-user/:id",upload.single('image'),
   validateRequest(usersUpdateValidation),
   userController.updateUser
 );

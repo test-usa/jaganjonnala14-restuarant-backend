@@ -1,6 +1,10 @@
 import { userModel } from "./users.model";
 import { IUser } from "./users.interface";
 import AppError from "../../../errors/AppError";
+import { uploadImgToCloudinary } from "../../../utils/sendImageToCloudinary";
+import { validateData} from "../../../middlewares/validateData ";
+import { usersUpdateValidation } from "./users.validation";
+import { UpdateQuery } from "mongoose";
 
 
 const createUser = async (data: IUser) => {
@@ -20,8 +24,25 @@ const getSingleUser = async (id: string) => {
   return result;
 };
 
-const updateUser = async (id: string, payload: Partial<IUser>) => {
-  const result = await userModel.findByIdAndUpdate(id, payload, { new: true });
+const updateUser = async (  id: string,
+  data: any,
+  file?: Express.Multer.File) => {
+
+    const parsedData = JSON.parse(data);
+
+    
+    if (file && file.path) {
+      const imageName = `${Math.floor(100 + Math.random() * 900)}`;
+      const { secure_url } = await uploadImgToCloudinary(imageName, file.path) as {
+        secure_url: string;
+      };
+      parsedData.image = secure_url;
+    }
+
+
+    const Data = await validateData(usersUpdateValidation, parsedData) as UpdateQuery<IUser>;
+
+  const result = await userModel.findByIdAndUpdate(id, Data, { new: true });
   if (!result) {
     throw new AppError(404, "User not found");
   }

@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
-import catchAsync from "../../utils/catchAsync";
-import sendResponse from "../../utils/sendResponse";
+import catchAsync from "../../../utils/catchAsync";
+import sendResponse from "../../../utils/sendResponse";
 
-import { OrderModel } from "../order/order.model";
+import { OrderModel } from "../../order/order.model";
+import { RestaurantModel } from "../../restuarant/restuarant.model";
 
 
 const allAnalytic = async (restaurantId: string) => {
@@ -11,6 +12,7 @@ const allAnalytic = async (restaurantId: string) => {
       restaurant: restaurantId,
       isDeleted: false,
     });
+    
   
     if (!orders || orders.length === 0) {
       return {
@@ -24,6 +26,13 @@ const allAnalytic = async (restaurantId: string) => {
     const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
     const totalOrders = orders.length;
     const averageOrderValue = totalRevenue / totalOrders;
+
+
+
+    //for admin
+    
+    const totalRestaurant = await RestaurantModel.find({});
+    console.log(totalRestaurant)
   
     return {
       totalRevenue: Number(totalRevenue.toFixed(2)),

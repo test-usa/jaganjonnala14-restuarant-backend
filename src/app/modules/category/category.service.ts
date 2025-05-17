@@ -35,6 +35,8 @@ import { uploadImgToCloudinary } from "../../utils/sendImageToCloudinary";
         if(!restaurant){
           throw new AppError(400,"restaurant doesn't found");
         }
+
+        
         
         return await CategoryModel.create(validatedData);
          } catch (error: unknown) {
