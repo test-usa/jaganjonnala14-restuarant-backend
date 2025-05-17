@@ -62,12 +62,12 @@ export const authService = {
       // 4. Create restaurant
       const restaurantData = {
         owner: newOwner[0]._id,
-        restaurantName: " ",
+        restaurantName: "your restaurant name",
         menus: [],
         status: "pending",
         restaurantAddress: data.restaurantAddress,
-        phone: " ",
-        logo: " ",
+        phone: "your phone",
+        logo: "",
         tagline: "",
         coverPhoto: "",
         images: [],
@@ -250,7 +250,7 @@ export const authService = {
     }
   
     // 2. Find the owner using the user ID
-    const owner = await OwnerModel.findOne({ user: findOwnerUser._id });
+    const owner = await OwnerModel.findOneAndUpdate({ user: findOwnerUser._id,status:"active"});
     if (!owner) {
       throw new AppError(404, "Owner not found");
     }

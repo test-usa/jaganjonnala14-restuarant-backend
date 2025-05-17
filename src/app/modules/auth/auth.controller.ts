@@ -154,14 +154,13 @@ const Login = catchAsync(
         );
       }
     }
-
+     
+    console.log(user._id)
   
-    const restaurantId = await RestaurantModel.findOne({owner:user._id});
-
-     console.log(restaurantId)
-
+    const restaurantData = await OwnerModel.findOne({user:user._id});
     const payload = {
       userId: user._id,
+      restaurantId: restaurantData?.user,
       role: user.role,
     };
 
