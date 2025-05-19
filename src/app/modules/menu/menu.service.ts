@@ -7,7 +7,7 @@
     import { menuPostValidation } from "./menu.validation";
     import { uploadImgToCloudinary } from "../../utils/sendImageToCloudinary";
     import { RestaurantModel } from "../restuarant/restuarant.model";
-    import mongoose, { Types } from "mongoose";
+    import mongoose from "mongoose";
     
 
     export const menuService = {
@@ -86,20 +86,6 @@
           }
         }
       },
-
-   
-async getMenuWithRestaurantFromDB(id: string) {
-  try {
-    return await MenuModel.find({ restaurant: new Types.ObjectId(id) });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw new Error(`${error.message}`);
-    } else {
-      throw new Error("An unknown error occurred while fetching by ID.");
-    }
-  }
-},
-
   async updateMenuIntoDB(data:IMenu,id: string) {
       try {
 

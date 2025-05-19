@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
-
-import httpStatus from "http-status";
-import catchAsync from "../../../utils/catchAsync";
+import catchAsync from "../../utils/catchAsync";
 import { analyticService } from "./analytic.service";
-import sendResponse from "../../../utils/sendResponse";
-
+import httpStatus from "http-status";
+import sendResponse from "../../utils/sendResponse";
 
 
 const analytics = catchAsync(async (req: Request, res: Response) => {
@@ -16,7 +14,7 @@ const analytics = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: "Restaurant Analytics data retrieved successfully",
+        message: "Restaurant deleted successfully",
         data: result,
       });
  

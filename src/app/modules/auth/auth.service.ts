@@ -62,12 +62,12 @@ export const authService = {
       // 4. Create restaurant
       const restaurantData = {
         owner: newOwner[0]._id,
-        restaurantName: "your restaurant name",
+        restaurantName: " ",
         menus: [],
         status: "pending",
         restaurantAddress: data.restaurantAddress,
-        phone: "your phone",
-        logo: "",
+        phone: " ",
+        logo: " ",
         tagline: "",
         coverPhoto: "",
         images: [],
@@ -241,55 +241,35 @@ export const authService = {
     await user.save();
   },
   
-
-
   async approveRestaurantByAdmin(email: string) {
-    const session = await mongoose.startSession();
+    // 1. Find the user
+    const findOwnerUser = await userModel.findOne({ email, role: "restaurant_owner" });
   
-    try {
-      session.startTransaction();
-  
-      // 1. Find the user
-      const findOwnerUser = await userModel.findOne({ email, role: "restaurant_owner" }).session(session);
-  
-      if (!findOwnerUser) {
-        throw new AppError(400, "You are not a user");
-      }
-  console.log( findOwnerUser )
-      // 2. Activate the Owner
-      const owner = await OwnerModel.findOneAndUpdate(
-        { user: findOwnerUser._id },
-        { status: "active" },
-        { new: true, session }
-      );
-      if (!owner) {
-        throw new AppError(404, "Owner not found");
-      }
-  
-      // 3. Activate the Restaurant
-      const ownerRestaurant = await RestaurantModel.findOneAndUpdate(
-        { owner: owner._id },
-        { status: "active" },
-        { new: true, session }
-      );
-      
-      console.log(ownerRestaurant)
-      if (!ownerRestaurant) {
-        throw new AppError(404, "Restaurant not found");
-      }
-  
-      // 4. Commit transaction
-      await session.commitTransaction();
-      session.endSession();
-  
-      return ownerRestaurant;
-    } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
-      throw error;
+    if (!findOwnerUser) {
+      throw new AppError(400, "You are not a restaurant owner");
     }
-  }
   
+    // 2. Find the owner using the user ID
+    const owner = await OwnerModel.findOne({ user: findOwnerUser._id });
+    if (!owner) {
+      throw new AppError(404, "Owner not found");
+    }
+  
+    // 3. Find the restaurant using the owner ID
+    const ownerRestaurant = await RestaurantModel.findOneAndUpdate(
+      { owner: owner._id },
+      { status: "active" },
+      { new: true } 
+    );
+    
+  
+    if (!ownerRestaurant) {
+      throw new AppError(404, "Restaurant not found");
+    }
+  
+  
+    return ownerRestaurant;
+  }
   
   
 

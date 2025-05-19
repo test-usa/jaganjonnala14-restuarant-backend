@@ -36,12 +36,7 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateUser = catchAsync(async (req: Request, res: Response) => {
-    const id = req.params.id;
-    const file = req.file;
-    const data = req.body.data;
-
-
-  const result = await userService.updateUser(id,data,file as Express.Multer.File);
+  const result = await userService.updateUser(req.params.id, req.body);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

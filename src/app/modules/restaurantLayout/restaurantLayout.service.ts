@@ -38,19 +38,10 @@ const getAllRestaurantLayout = async () => {
 
 
 const getSingleRestaurantLayout = async (id: string) => {
-  const result = await RestaurantLayoutModel.findById(id)
-    .populate('floor')
-    .populate({
-      path: 'restaurant',
-      populate: {
-        path: 'menus', // this will now populate the menu documents
-      },
-    });
-
+  const result = await RestaurantLayoutModel.findById(id);
   if (!result || result.isDeleted) {
     throw new AppError(404, 'Restaurant layout not found');
   }
-
   return result;
 };
 

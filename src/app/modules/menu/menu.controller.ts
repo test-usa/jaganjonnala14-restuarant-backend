@@ -30,17 +30,10 @@ import { IMenu } from "./menu.interface";
     });
     
     const deleteMenu = catchAsync(async (req: Request, res: Response) => {
-    const result =  await menuService.deleteMenuFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Menu Deleted successfully",data: result });
+      await menuService.deleteMenuFromDB(req.params.id);
+      sendResponse(res, { statusCode: status.OK, success: true, message: "Menu Deleted successfully",data: null });
     });
-
-    const  MenuWithRestaurant = catchAsync(async (req: Request, res: Response) => {
-     
-     const result =  await menuService.getMenuWithRestaurantFromDB(req.params.restaurantId);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Restaurant menu fetched successfully",data: result});
-    });
-
 
     
-    export const menuController = { postMenu, getAllMenu, getSingleMenu, updateMenu, deleteMenu,MenuWithRestaurant };
+    export const menuController = { postMenu, getAllMenu, getSingleMenu, updateMenu, deleteMenu };
     
