@@ -46,7 +46,7 @@ passport.use(
         // ✅ Case: First-time Google login — create user, restaurant, and owner
         if (!user) {
           // 1. Create user
-          let user: any = await userModel.create(
+          let user = await userModel.create(
             [
               {
                 name: profile.displayName,
