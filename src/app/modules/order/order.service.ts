@@ -35,11 +35,6 @@ const updateOrder = async (id: string, payload: Partial<IOrder>) => {
   const updated = await OrderModel.findByIdAndUpdate(id, payload, {
     new: true,
   });
-
-   const findOrder = await OrderModel.findOne({_id:id})
-  if(!findOrder){
-    throw new AppError(400,"order updated Failed");
-  }
   return updated;
 };
 

@@ -10,8 +10,7 @@ import { restaurantZoneRoutes } from "../modules/restaurantZone/restaurantZone.r
 import { restaurantLayoutRoutes } from "../modules/restaurantLayout/restaurantLayout.routes";
 import { restuarantRoutes } from "../modules/restuarant/restuarant.routes";
 import { staffRoutes } from "../modules/users/staff/staff.routes";
-import { analyticsRoutes } from "../modules/analytics/RestaurantAnaltytics/analytic.route";
-import { AdminAnalyticsRoutes } from "../modules/analytics/adminAnalytics/adminAnalytics.route";
+import { analyticsRoutes } from "../modules/analytics/analytic.route";
 
 
 const router = Router();
@@ -60,9 +59,6 @@ const moduleRoutes = [
   },{
     path:"/analytics",
     route: analyticsRoutes
-  },{
-    path:"/admin-analytics",
-    route: AdminAnalyticsRoutes,
   }
 ];
 
