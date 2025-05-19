@@ -61,9 +61,9 @@ const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
     data = req.body.data; // Handle non-string data if applicable
   }
 
-  if (data.status) {
-    throw new AppError(400, "You cannot update status");
-  }
+  // if (data.status) {
+  //   throw new AppError(400, "You cannot update status");
+  // }
 
   const id = req.params.id;
 
