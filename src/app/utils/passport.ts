@@ -40,7 +40,7 @@ passport.use(
 
         // ✅ Case: Already exists with Google login
         if (user && user.provider === "google") {
-          return done(null, user);
+          return done(null, user || undefined);
         }
 
         // ✅ Case: First-time Google login — create user, restaurant, and owner
@@ -77,7 +77,7 @@ passport.use(
         await session.commitTransaction();
         session.endSession();
 
-        return done(null, user!);
+        return done(null, user || undefined);
       } catch (error: any) {
         await session.abortTransaction();
         session.endSession();
