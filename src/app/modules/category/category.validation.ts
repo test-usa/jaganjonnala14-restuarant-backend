@@ -11,19 +11,12 @@ export const categoryPostValidation = z.object({
   categoryName: z
     .string()
     .min(1, { message: "Category name is required" })
-    .refine(
-      async (name) => {
-        const exists = await CategoryModel.findOne({ categoryName: name });
-        return !exists;
-      },
-      { message: "Category name must be unique" }
-    ),
+  ,
 
   description: z.string().optional().default(""),
 
   image: z
     .string()
-    .url({ message: "Image must be a valid URL" })
     .optional()
     .default(""),
 

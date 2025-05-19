@@ -7,6 +7,11 @@ import { floorRoutes } from "../modules/floor/floor.routes";
 import { orderRoutes } from "../modules/order/order.routes";
 import { tableRoutes } from "../modules/table/table.routes";
 import { restaurantZoneRoutes } from "../modules/restaurantZone/restaurantZone.routes";
+import { restaurantLayoutRoutes } from "../modules/restaurantLayout/restaurantLayout.routes";
+import { restuarantRoutes } from "../modules/restuarant/restuarant.routes";
+import { staffRoutes } from "../modules/users/staff/staff.routes";
+import { analyticsRoutes } from "../modules/analytics/RestaurantAnaltytics/analytic.route";
+import { AdminAnalyticsRoutes } from "../modules/analytics/adminAnalytics/adminAnalytics.route";
 
 
 const router = Router();
@@ -43,6 +48,21 @@ const moduleRoutes = [
   },{
     path:"/orders",
     route: orderRoutes,
+  },{
+    path:"/layout",
+    route: restaurantLayoutRoutes,
+  },{
+    path:"/restaurant",
+    route: restuarantRoutes,
+  },{
+    path:"/staff",
+    route: staffRoutes,
+  },{
+    path:"/analytics",
+    route: analyticsRoutes
+  },{
+    path:"/admin-analytics",
+    route: AdminAnalyticsRoutes,
   }
 ];
 

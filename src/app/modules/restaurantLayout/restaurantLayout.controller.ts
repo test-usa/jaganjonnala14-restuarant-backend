@@ -1,34 +1,71 @@
-import { Request, Response } from "express";
-    import { restaurantLayoutService } from "./restaurantLayout.service";
-    import catchAsync from "../../utils/catchAsync";
-    import sendResponse from "../../utils/sendResponse";
-    import status from "http-status";
-    
-    const postRestaurantLayout = catchAsync(async (req: Request, res: Response) => {
-      const result = await restaurantLayoutService.postRestaurantLayoutIntoDB(req.body);
-      sendResponse(res, { statusCode: status.CREATED, success: true, message: "Created successfully", data: result });
-    });
-    
-    const getAllRestaurantLayout = catchAsync(async (req: Request, res: Response) => {
-      const result = await restaurantLayoutService.getAllRestaurantLayoutFromDB(req.query);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Fetched successfully", data: result });
-    });
-    
-    const getSingleRestaurantLayout = catchAsync(async (req: Request, res: Response) => {
-      const result = await restaurantLayoutService.getSingleRestaurantLayoutFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Fetched successfully", data: result });
-    });
-    
-    const updateRestaurantLayout = catchAsync(async (req: Request, res: Response) => {
-      const result = await restaurantLayoutService.updateRestaurantLayoutIntoDB(req.body);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Updated successfully", data: result });
-    });
-    
-    const deleteRestaurantLayout = catchAsync(async (req: Request, res: Response) => {
-      await restaurantLayoutService.deleteRestaurantLayoutFromDB(req.params.id);
-      sendResponse(res, { statusCode: status.OK, success: true, message: "Deleted successfully",data: null });
-    });
+import httpStatus from 'http-status';
+import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import { restaurantLayoutService } from './restaurantLayout.service';
 
-    
-    export const restaurantLayoutController = { postRestaurantLayout, getAllRestaurantLayout, getSingleRestaurantLayout, updateRestaurantLayout, deleteRestaurantLayout };
-    
+const postRestaurantLayout = catchAsync(async (req, res) => {
+  const result = await restaurantLayoutService.postRestaurantLayout(req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: 'Restaurant layout created successfully',
+    data: result,
+  });
+});
+
+const getAllRestaurantLayout = catchAsync(async (_req, res) => {
+  const result = await restaurantLayoutService.getAllRestaurantLayout();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Restaurant layouts fetched successfully',
+    data: result,
+  });
+});
+
+const getSingleRestaurantLayout = catchAsync(async (req, res) => {
+  const result = await restaurantLayoutService.getSingleRestaurantLayout(
+    req.params.id
+  );
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Restaurant layout fetched successfully',
+    data: result,
+  });
+});
+
+const updateRestaurantLayout = catchAsync(async (req, res) => {
+   const user = req.body.user;
+  const result = await restaurantLayoutService.updateRestaurantLayout(
+    req.params.id,
+    user,
+    req.body
+  );
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Restaurant layout updated successfully',
+    data: result,
+  });
+});
+
+const deleteRestaurantLayout = catchAsync(async (req, res) => {
+  const result = await restaurantLayoutService.deleteRestaurantLayout(
+    req.params.id
+  );
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Restaurant layout deleted successfully',
+    data: result,
+  });
+});
+
+export const restaurantLayoutController = {
+  postRestaurantLayout,
+  getAllRestaurantLayout,
+  getSingleRestaurantLayout,
+  updateRestaurantLayout,
+  deleteRestaurantLayout,
+};

@@ -5,45 +5,59 @@
     import { validateData } from "../../middlewares/validateData ";
     import { IMenu } from "./menu.interface";
     import { menuPostValidation } from "./menu.validation";
-    import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
-import { RestaurantModel } from "../restuarant/restuarant.model";
+    import { uploadImgToCloudinary } from "../../utils/sendImageToCloudinary";
+    import { RestaurantModel } from "../restuarant/restuarant.model";
+    import mongoose from "mongoose";
     
 
     export const menuService = {
-      async postMenuIntoDB(data :  any , file: Express.Multer.File & { path?: string }) {
-      try {
-
-  
-        const menudata = JSON.parse(data);
-          
-                 if (file) {
-                   const imageName = `${Math.floor(100 + Math.random() * 900)}`;
-                   const path = file.path;
-                   const { secure_url } = (await sendImageToCloudinary(imageName, path)) as {
-                     secure_url: string;
-                   };
-             
-                   menudata.image = secure_url as string;
-                 } else {
-                  menudata.image = 'no image';
-                 }
-
-      const validatedData =  await validateData<IMenu>(menuPostValidation,menudata );
-
-
-      const restaurant = await  RestaurantModel.findOne({_id: validatedData.restaurant});
- 
-      if(!restaurant){
-        throw new AppError(400,"restaurant doesn't found");
-      }
-               
-        return await MenuModel.create(validatedData);
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
+      async postMenuIntoDB(data: any, file: Express.Multer.File & { path?: string }) {
+        const session = await mongoose.startSession();
+      
+        try {
+          session.startTransaction();
+      
+          const menudata = JSON.parse(data);
+      
+          if (file && file.path) {
+            const imageName = `${Math.floor(100 + Math.random() * 900)}`;
+            const { secure_url } = await uploadImgToCloudinary(imageName, file.path) as {
+              secure_url: string;
+            };
+            menudata.image = secure_url;
           } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
+            menudata.image = 'no image';
           }
+      
+        
+          const validatedData = await validateData<IMenu>(menuPostValidation, menudata);
+      
+          const restaurant = await RestaurantModel.findById(validatedData.restaurant).session(session);
+          if (!restaurant) {
+            throw new AppError(400, "Restaurant doesn't exist");
+          }
+      
+          const menu = await MenuModel.create([validatedData], { session });
+          const createdMenu = menu[0];
+      
+  
+          await RestaurantModel.findByIdAndUpdate(
+            validatedData.restaurant,
+            { $push: { menus: createdMenu._id } },
+            { session }
+          );
+      
+          await session.commitTransaction();
+          session.endSession();
+      
+          return createdMenu;
+      
+        } catch (error: unknown) {
+          // Rollback in case of any failure
+          await session.abortTransaction();
+          session.endSession();
+      
+          throw error;
         }
       },
       async getAllMenuFromDB(query: any) {

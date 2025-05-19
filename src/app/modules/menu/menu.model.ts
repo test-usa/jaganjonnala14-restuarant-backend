@@ -6,7 +6,7 @@ const MenuSchema = new Schema<IMenu>(
   {
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     restaurant: { type: Schema.Types.ObjectId, ref: "Restaurant", required: true },
-    itemName: { type: String, required: true ,unique:true},
+    itemName: { type: String, required: true},
     image: {
       type: String,
       default: "",
@@ -28,13 +28,10 @@ const MenuSchema = new Schema<IMenu>(
     versionKey:false
   }
 );
-MenuSchema.post("save", function (error: any, _doc: any, next: (arg0: Error) => void) {
-  if (error.name === "MongoServerError" && error.code === 11000) {
-    if (error.keyPattern?.itemName) {
-      return next(new Error("Item name must be unique"));
-    }
-  }
-  next(error);
-});
+
+
+MenuSchema.index({ restaurant: 1, itemName: 1 }, { unique: true });
+
+
 
 export const MenuModel = model<IMenu>("Menu", MenuSchema);

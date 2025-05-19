@@ -12,6 +12,8 @@ import { userModel } from "../users/user/users.model";
 import { authService } from "./auth.service";
 import { OwnerModel } from "../users/owner/owner.model";
 import { RESTAURANT_STATUS } from "../restuarant/restuarant.constant";
+import { OWNER_STATUS } from "../users/owner/owner.constant";
+import { RestaurantModel } from "../restuarant/restuarant.model";
 
 const restuarantRegisterRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -43,6 +45,7 @@ const otpValidation = catchAsync(
 const resendOtp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const email = req.query.email as string;
+    
     if (!email) {
       throw new Error("Email is required to resend OTP.");
     }
@@ -94,50 +97,72 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-
-
 const Login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
-    // 1. Check if user exists
-    const user: IUser | null = await userModel
-      .findOne({ email: email })
-      .select("+password");
+    const user = await userModel.findOne({ email }).select("+password");
 
     if (!user) {
-      throw new AppError(status.CONFLICT, "User not exists! Please register");
-    }
-
-    const isRestaurantExistForThisUser: any = await OwnerModel.findOne({
-      user: user._id,
-    }).populate({
-      path: "restaurant", // field in OwnerModel schema
-      model: "Restaurant", // name of the Mongoose model
-    });
-
-    if (
-      isRestaurantExistForThisUser &&
-      isRestaurantExistForThisUser.restaurant.status != RESTAURANT_STATUS.ACTIVE
-    ) {
-      throw new Error(
-        "You are not allowed to log in because your account is not yet active. Please wait for admin approval."
+      throw new AppError(
+        status.NOT_FOUND,
+        "User does not exist. Please register."
       );
     }
 
-    // 2. Compare password using bcrypt directly
-    const isMatch = await bcrypt.compare(password, user?.password);
-    if (!isMatch) {
-      throw new AppError(status.UNAUTHORIZED, "Password is incorrect");
+    if (!user.password) {
+      throw new AppError(
+        status.UNAUTHORIZED,
+        "This account was created using OAuth. Please login with Google."
+      );
     }
 
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      throw new AppError(status.UNAUTHORIZED, "Incorrect password.");
+    }
+
+    // ✅ Owner check (if role is restaurant_owner)
+    if (user.role === "restaurant_owner") {
+      const owner = await OwnerModel.findOne({ user: user._id });
+
+      if (!owner) {
+        throw new AppError(
+          status.UNAUTHORIZED,
+          "Owner profile not found. Please register as a restaurant owner."
+        );
+      }
+
+      if (owner.status === OWNER_STATUS.UNVERIFIED) {
+        throw new AppError(
+          status.UNAUTHORIZED,
+          "Your account is not verified. Please verify OTP."
+        );
+      }
+
+      if (owner.status === OWNER_STATUS.PENDING) {
+        throw new AppError(
+          status.UNAUTHORIZED,
+          "Your account is pending admin approval."
+        );
+      }
+
+      if (owner.status === OWNER_STATUS.REJECTED) {
+        throw new AppError(
+          status.UNAUTHORIZED,
+          "Your owner request has been rejected."
+        );
+      }
+    }
+     
+    console.log(user._id)
+  
+    const restaurantData = await OwnerModel.findOne({user:user._id});
     const payload = {
       userId: user._id,
+      restaurantId: restaurantData?.user,
       role: user.role,
     };
-
-    //  Generate access token:
 
     const accessToken = generateToken(
       payload,
@@ -145,22 +170,18 @@ const Login = catchAsync(
       config.JWT_ACCESS_TOKEN_EXPIRES_IN!
     );
 
-    // generate refresh token:
     const refreshToken = generateToken(
       payload,
       config.JWT_REFRESH_TOKEN_SECRET!,
       config.JWT_REFRESH_TOKEN_EXPIRES_IN!
     );
 
-    // Set refresh token in cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: config.ENVIRONMENT === "production",
-      sameSite: config.ENVIRONMENT === "production",
+      sameSite: config.ENVIRONMENT === "production" ? "strict" : "lax",
       maxAge: parseInt(config.JWT_REFRESH_TOKEN_EXPIRES_IN!) * 1000,
     });
-
-    //  send access token and user info:
 
     sendResponse(res, {
       statusCode: status.OK,
@@ -169,9 +190,11 @@ const Login = catchAsync(
       data: {
         accessToken,
         user: {
+          _id: user._id,
           name: user.name,
           email: user.email,
           role: user.role,
+          image: user.image || null,
         },
       },
     });
@@ -224,8 +247,6 @@ const OAuthCallback = (req: Request, res: Response) => {
         },
       },
     });
-
-   
   } catch (error) {
     console.error("OAuth Callback Error:", error);
     res.status(500).json({ success: false, message: "OAuth login failed" });
@@ -371,7 +392,6 @@ const Logout = catchAsync(
 //   }
 // );
 
-
 // 13. Verify phone number
 const verifyPhoneNumber = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -436,7 +456,8 @@ const resendVerificationPhoneNumber = catchAsync(
       message: "Verification phone number resent",
       data: null,
     });
-  }
+  },
+
 );
 // 16. Verify phone number OTP
 const verifyPhoneNumberOTP = catchAsync(
@@ -483,6 +504,22 @@ const verifyEmailOTP = catchAsync(
   }
 );
 
+const approveRestaurantByAdmin = catchAsync(async(req,res)=>{
+  
+
+  const email = req.body.email;
+
+  const result = await authService.approveRestaurantByAdmin(email);
+
+  
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Restaurant  approved successfully",
+    data: result,
+  });
+})
+
 export const authController = {
   restuarantRegisterRequest,
   otpValidation,
@@ -504,4 +541,5 @@ export const authController = {
   resendVerificationPhoneNumber,
   verifyPhoneNumberOTP,
   verifyEmailOTP,
+  approveRestaurantByAdmin
 };

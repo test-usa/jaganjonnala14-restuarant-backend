@@ -17,6 +17,7 @@ router.post("/resend-otp", authController.resendOtp);
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/verify-password-otp", authController.verifyResetOtp);
 router.post("/reset-password", authController.resetPassword);
+router.post("/approved-restaurant-admin", authController.approveRestaurantByAdmin);
 
 
 

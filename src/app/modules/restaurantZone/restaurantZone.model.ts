@@ -1,11 +1,14 @@
 import { Schema, model } from "mongoose";
 import { IRestaurantZone } from "./restaurantZone.interface";
 
-
 const RestaurantZoneSchema = new Schema<IRestaurantZone>(
   {
-    restaurant: { type: Schema.Types.ObjectId, ref: "Restaurant", required: true },
-    tableName: { type: String, required: true ,unique: true },
+    restaurant: {
+      type: Schema.Types.ObjectId,
+      ref: "Restaurant",
+      required: true,
+    },
+    tableName: { type: String, required: true },
     tableSetting: { type: String, required: true },
     seatingCapacity: { type: Number, required: true },
     isDeleted: { type: Boolean, default: false },
@@ -17,16 +20,9 @@ const RestaurantZoneSchema = new Schema<IRestaurantZone>(
     versionKey: false,
   }
 );
-RestaurantZoneSchema.post("save", function (error: any, _doc: any, next: (err: Error) => void) {
-  if (error.name === "MongoServerError" && error.code === 11000) {
-    if (error.keyPattern?.tableName) {
-      return next(new Error("Table name must be unique"));
-    }
-  }
-  next(error);
-});
+RestaurantZoneSchema.index({ restaurant: 1, tableName: 1 }, { unique: true });
 
-export const RestaurantZone= model<IRestaurantZone>(
+export const RestaurantZone = model<IRestaurantZone>(
   "RestaurantZone",
   RestaurantZoneSchema
 );

@@ -1,112 +1,70 @@
-
-      import { USERS_SEARCHABLE_FIELDS } from "./users.constant";
-   
-   import status from "http-status";
 import { userModel } from "./users.model";
-import QueryBuilder from "../../../builder/QueryBuilder";
+import { IUser } from "./users.interface";
 import AppError from "../../../errors/AppError";
-   
+import { uploadImgToCloudinary } from "../../../utils/sendImageToCloudinary";
+import { validateData} from "../../../middlewares/validateData ";
+import { usersUpdateValidation } from "./users.validation";
+import { UpdateQuery } from "mongoose";
 
 
+const createUser = async (data: IUser) => {
+  const result = await userModel.create(data);
+  return result;
+};
+
+const getAllUsers = async () => {
+  return userModel.find({ isDeleted: false });
+};
+
+const getSingleUser = async (id: string) => {
+  const result = await userModel.findById(id);
+  if (!result || result.isDeleted) {
+    throw new AppError(404, "User not found");
+  }
+  return result;
+};
+
+const updateUser = async (  id: string,
+  data: any,
+  file?: Express.Multer.File) => {
+
+    const parsedData = JSON.parse(data);
+
+    
+    if (file && file.path) {
+      const imageName = `${Math.floor(100 + Math.random() * 900)}`;
+      const { secure_url } = await uploadImgToCloudinary(imageName, file.path) as {
+        secure_url: string;
+      };
+      parsedData.image = secure_url;
+    }
 
 
-    export const usersService = {
-      async postUsersIntoDB(data: any) {
-      try {
-        return await userModel.create(data);
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
-      },
-      async getAllUsersFromDB(query: any) {
-      try {
-    
-    
-      const service_query = new QueryBuilder(userModel.find(), query)
-            .search(USERS_SEARCHABLE_FIELDS)
-            .filter()
-            .sort()
-            .paginate()
-            .fields();
-      
-          const result = await service_query.modelQuery;
-          const meta = await service_query.countTotal();
-          return {
-            result,
-            meta,
-          };
-    
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
-      },
-      async getSingleUsersFromDB(id: string) {
-        try {
-        return await userModel.findById(id);
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
-      },
-      async updateUsersIntoDB(data: any) {
-      try {
-    
-    
-    
-      const isDeleted = await userModel.findOne({ _id: data.id });
-        if (isDeleted?.isDeleted) {
-          throw new AppError(status.NOT_FOUND, "users is already deleted");
-        }
-    
-        const result = await userModel.updateOne({ _id: data.id }, data, {
-          new: true,
-        });
-        if (!result) {
-          throw new Error("users not found.");
-        }
-        return result;
-    
-    
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
-      },
-      async deleteUsersFromDB(id: string) {
-        try {
-    
-    
-     // Step 1: Check if the users exists in the database
-        const isExist = await userModel.findOne({ _id: id });
-    
-        if (!isExist) {
-          throw new AppError(status.NOT_FOUND, "users not found");
-        }
-    
-        // Step 4: Delete the home users from the database
-        await userModel.updateOne({ _id: id }, { isDelete: true });
-        return;
-    
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
-      },
-    };
+    const Data = await validateData(usersUpdateValidation, parsedData) as UpdateQuery<IUser>;
+
+  const result = await userModel.findByIdAndUpdate(id, Data, { new: true });
+  if (!result) {
+    throw new AppError(404, "User not found");
+  }
+  return result;
+};
+
+const deleteUser = async (id: string) => {
+  const result = await userModel.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true }
+  );
+  if (!result) {
+    throw new AppError(404, "User not found");
+  }
+  return result;
+};
+
+export const userService = {
+  createUser,
+  getAllUsers,
+  getSingleUser,
+  updateUser,
+  deleteUser,
+};
