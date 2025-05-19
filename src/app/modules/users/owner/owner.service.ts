@@ -1,13 +1,14 @@
-import { ownerModel } from "./owner.model";
+
 import { OWNER_SEARCHABLE_FIELDS } from "./owner.constant";
 import QueryBuilder from "../../../builder/QueryBuilder";
 import status from "http-status";
 import AppError from "../../../errors/AppError";
+import { OwnerModel } from "./owner.model";
 
 export const ownerService = {
   async postOwnerIntoDB(data: any) {
     try {
-      return await ownerModel.create(data);
+      return await OwnerModel.create(data);
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new Error(`${error.message}`);
@@ -18,7 +19,7 @@ export const ownerService = {
   },
   async getAllOwnerFromDB(query: any) {
     try {
-      const service_query = new QueryBuilder(ownerModel.find(), query)
+      const service_query = new QueryBuilder(OwnerModel.find(), query)
         .search(OWNER_SEARCHABLE_FIELDS)
         .filter()
         .sort()
@@ -41,7 +42,7 @@ export const ownerService = {
   },
   async getSingleOwnerFromDB(id: string) {
     try {
-      return await ownerModel.findById(id);
+      return await OwnerModel.findById(id);
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new Error(`${error.message}`);
@@ -52,12 +53,12 @@ export const ownerService = {
   },
   async updateOwnerIntoDB(data: any) {
     try {
-      const isDeleted = await ownerModel.findOne({ _id: data.id });
-      if (isDeleted?.isDelete) {
+      const isDeleted = await OwnerModel.findOne({ _id: data.id });
+      if (isDeleted?.isDeleted) {
         throw new AppError(status.NOT_FOUND, "owner is already deleted");
       }
 
-      const result = await ownerModel.updateOne({ _id: data.id }, data, {
+      const result = await OwnerModel.updateOne({ _id: data.id }, data, {
         new: true,
       });
       if (!result) {
@@ -75,14 +76,14 @@ export const ownerService = {
   async deleteOwnerFromDB(id: string) {
     try {
       // Step 1: Check if the owner exists in the database
-      const isExist = await ownerModel.findOne({ _id: id });
+      const isExist = await OwnerModel.findOne({ _id: id });
 
       if (!isExist) {
         throw new AppError(status.NOT_FOUND, "owner not found");
       }
 
       // Step 4: Delete the home owner from the database
-      await ownerModel.updateOne({ _id: id }, { isDelete: true });
+      await OwnerModel.updateOne({ _id: id }, { isDelete: true });
       return;
     } catch (error: unknown) {
       if (error instanceof Error) {
