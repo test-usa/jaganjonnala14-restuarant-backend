@@ -14,6 +14,7 @@ export const categoryService = {
     file: Express.Multer.File & { path?: string }
   ) {
     try {
+      
       const categorydata = JSON.parse(data);
 
       const validatedData = await validateData<ICategory>(
