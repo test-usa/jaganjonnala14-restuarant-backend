@@ -10,12 +10,12 @@ import { userModel } from "../../users/user/users.model";
 
 const allAdminAnalytic = async () => {
     const totalRestaurant = await RestaurantModel.find({});
-    // const totalOrder = await OrderModel.find({});
+    const totalOrder = await OrderModel.find({});
     const totalUser = await userModel.find({});
   
     return {
       totalRestaurants: totalRestaurant?.length || 0,
-    //   totalOrders: totalOrder?.length || 0,
+      totalOrders: totalOrder?.length || 0,
       totalUsers: totalUser?.length || 0
     };
   };

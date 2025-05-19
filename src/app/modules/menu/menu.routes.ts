@@ -13,6 +13,7 @@ import { upload } from "../../utils/sendImageToCloudinary";
     }, menuController.postMenu);
     router.get("/all-menu", menuController.getAllMenu);
     router.get("/single-menu/:id", menuController.getSingleMenu);
+    router.get("/restaurant-menu/:restaurantId", menuController.MenuWithRestaurant);
     router.put("/update-menu/:id", validateRequest(menuUpdateValidation), menuController.updateMenu);
     router.delete("/delete-menu/:id", menuController.deleteMenu);
     
