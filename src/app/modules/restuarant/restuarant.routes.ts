@@ -18,13 +18,13 @@ import { restuarantController } from "./restaurant.controller";
       );
       
     
-    router.put(
+      router.put(
         "/update-restaurant/:id",
         upload.fields([
           { name: "images", maxCount: 5 },
           { name: "logo", maxCount: 1 },
         ]),
-        restuarantController.postRestuarant
+        restuarantController.updateRestuarant
       );
       
     router.get("/all-restaurant", restuarantController.getAllRestuarant);

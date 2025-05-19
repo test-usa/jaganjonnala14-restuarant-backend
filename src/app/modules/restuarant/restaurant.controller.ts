@@ -53,55 +53,62 @@ const getSingleRestuarant = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
-    const data = JSON.parse(req.body.data);
-  
-    if (data.status) {
-      throw new AppError(400, "You cannot update status");
+  // Parse data only if it exists and is a string
+  let data: Partial<IRestaurant & { status?: string }> = {};
+  if (req.body.data && typeof req.body.data === 'string') {
+    data = JSON.parse(req.body.data);
+  } else if (req.body.data) {
+    data = req.body.data; // Handle non-string data if applicable
+  }
+
+  if (data.status) {
+    throw new AppError(400, "You cannot update status");
+  }
+
+  const id = req.params.id;
+
+  // Safely handle file uploads
+  const files = (req.files as { [fieldname: string]: Express.Multer.File[] })?.images?.map((file: Express.Multer.File) => file.path) || [];
+  const uploadLogo = (req.files as { [fieldname: string]: Express.Multer.File[] })?.logo?.[0]?.path;
+
+  const { images, coverPhoto, logo, ...rest } = data;
+
+  const restaurantData: Partial<IRestaurant> = { ...rest };
+
+  // Upload logo if provided
+  if (uploadLogo) {
+    try {
+      const { secure_url } = await uploadImgToCloudinary("logo", uploadLogo);
+      restaurantData.logo = secure_url;
+    } catch (err) {
+      console.error("Error uploading logo to Cloudinary:", err);
+      throw new AppError(500, "Failed to upload logo");
     }
-  
-    const id = req.params.id;
-  
-    const files = (req.files as any)?.images?.map((file: Express.Multer.File) => file.path) || [];
-    const uploadLogo = (req.files as any)?.logo?.[0]?.path;
-  
-    const { images, coverPhoto, logo, ...rest } = data;
-  
-    const restaurantData: Partial<IRestaurant> = { ...rest };
-  
-    // Upload logo if provided
-    if (uploadLogo) {
-      try {
-        const { secure_url } = await uploadImgToCloudinary("logo", uploadLogo);
-        restaurantData.logo = secure_url;
-      } catch (err) {
-        console.error("Error uploading logo to Cloudinary:", err);
-        throw new AppError(500, "Failed to upload logo");
-      }
+  }
+
+  // Upload images if provided
+  if (files.length > 0) {
+    try {
+      const uploadedImages = await uploadMultipleImages(files);
+      restaurantData.images = uploadedImages;
+      restaurantData.coverPhoto = uploadedImages[0]; 
+    } catch (err) {
+      console.error("Error uploading images to Cloudinary:", err);
+      throw new AppError(500, "Failed to upload images");
     }
-  
-    // Upload images if provided
-    if (files.length > 0) {
-      try {
-        const uploadedImages = await uploadMultipleImages(files);
-        restaurantData.images = uploadedImages;
-        restaurantData.coverPhoto = uploadedImages[0]; // Optional: pick the first as cover
-      } catch (err) {
-        console.error("Error uploading images to Cloudinary:", err);
-        throw new AppError(500, "Failed to upload images");
-      }
-    }
-  
-    const validate = await validateData(restuarantUpdateValidation, restaurantData) as Partial<IRestaurant>;
-  
-    const result = await restaurantService.updateRestaurant(id, validate);
-  
-    sendResponse(res, {
-      success: true,
-      statusCode: httpStatus.OK,
-      message: "Restaurant updated successfully",
-      data: result,
-    });
+  }
+
+  const validate = await validateData(restuarantUpdateValidation, restaurantData) as Partial<IRestaurant>;
+
+  const result = await restaurantService.updateRestaurant(id, validate);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Restaurant updated successfully",
+    data: result,
   });
+});
   
   
 
