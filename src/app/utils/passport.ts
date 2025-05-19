@@ -6,6 +6,7 @@ import { userModel } from "../modules/users/user/users.model";
 import { OwnerModel } from "../modules/users/owner/owner.model";
 import mongoose from "mongoose";
 import { OWNER_STATUS } from "../modules/users/owner/owner.constant";
+import config from "../config";
 
 dotenv.config();
 
@@ -13,8 +14,8 @@ dotenv.config();
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientID: config .GOOGLE_CLIENT_ID  || "",
+      clientSecret: config.GOOGLE_CLIENT_SECRET || "",
       callbackURL: `${process.env.BASE_URL}/api/v1/auth/google/callback`,
     },
     async (_accessToken, _refreshToken, profile, done) => {

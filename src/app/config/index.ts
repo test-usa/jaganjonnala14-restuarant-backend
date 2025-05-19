@@ -14,6 +14,8 @@ export default {
   JWT_REFRESH_TOKEN_EXPIRES_IN: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
   CLOUD_NAME: process.env.CLOUD_NAME,
   API_KEY:process.env.API_KEY,
-  API_SECRATE:process.env.API_SECRATE
+  API_SECRATE:process.env.API_SECRATE,
+  GOOGLE_CLIENT_ID:  process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET:  process.env.GOOGLE_CLIENT_SECRET
 
 };
