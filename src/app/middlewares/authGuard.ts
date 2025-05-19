@@ -9,9 +9,9 @@
 //   }
 // }
 // import jwt, { JwtPayload } from "jsonwebtoken";
-// import { usersModel } from "../modules/users/user/users.model";
 // import AppError from "../errors/AppError";
 // import status from "http-status";
+// import { userModel } from "../modules/users/user/users.model";
 
 // export const authenticate = async (
 //   req: Request,
@@ -31,7 +31,7 @@
 //     if (!decoded) {
 //       throw new Error("Invalid token");
 //     }
-//     const user = await usersModel.findById(decoded.userId);
+//     const user = await userModel.findById(decoded.userId);
 //     if (!user || !user.isActive) {
 //       {
 //         throw new Error("User not found or inactive");
@@ -98,7 +98,7 @@
 //   next();
 // };
 // export const isDeleted = (req: Request, res: Response, next: NextFunction) => {
-//   if (req.user.isDelete) {
+//   if (req.user.isDeleted) {
 //     return res.status(403).json({
 //       success: false,
 //       message: "Forbidden",
@@ -111,7 +111,7 @@
 //   res: Response,
 //   next: NextFunction
 // ) => {
-//   if (req.user.isDelete) {
+//   if (req.user.isDeleted) {
 //     return res.status(403).json({
 //       success: false,
 //       message: "Forbidden",
